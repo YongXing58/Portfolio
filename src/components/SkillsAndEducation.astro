@@ -2,7 +2,7 @@
 import { resume } from '@data/resume';
 ---
 
-<section id="skills" class="mx-auto max-w-5xl px-6 py-16">
+<section id="skills" class="snap-section section-enter mx-auto max-w-5xl px-6 py-16" data-anim="slide-right">
   <div class="grid gap-14 sm:grid-cols-2">
     <div>
       <p class="section-label reveal mb-10">Skills</p>
@@ -37,7 +37,7 @@ import { resume } from '@data/resume';
                 <ul class="mt-3 space-y-1 text-sm text-ink-700">
                   {edu.highlights.map((h) => (
                     <li class="flex gap-2">
-                      <span class="text-splash-blue">✦</span>
+                      <span class="bullet-star text-splash-blue">✦</span>
                       <span>{h}</span>
                     </li>
                   ))}

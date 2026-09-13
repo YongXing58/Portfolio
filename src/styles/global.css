@@ -5,11 +5,17 @@
 @layer base {
   html {
     @apply scroll-smooth;
+    /* One section at a time: each `.snap-section` claims a full viewport
+       and the page settles onto its top edge as the user scrolls past.
+       `proximity` (not `mandatory`) so a section taller than the viewport
+       never traps the scroll — see CLAUDE.md §3. */
+    scroll-snap-type: y proximity;
   }
 
   /* Offset anchor-jump targets so the sticky header never covers a
      section's heading when navigating via #hash links. */
   section[id],
+  footer[id],
   #top {
     scroll-margin-top: 6rem;
   }
@@ -32,27 +38,32 @@
   ::selection {
     @apply bg-splash-yellow/60 text-ink-900;
   }
-
-  /* Custom cursor-follow dot (desktop, fine-pointer only — see BaseLayout
-     script). Hidden by default; JS reveals it once positioned. */
-  #cursor-dot {
-    @apply pointer-events-none fixed left-0 top-0 z-[999] hidden h-6 w-6 rounded-full border-2 border-ink-900 mix-blend-multiply;
-    transform: translate(-50%, -50%);
-    transition: width 0.15s ease, height 0.15s ease, background-color 0.15s ease;
-  }
 }
 
 @layer components {
+  /* One-section-at-a-time page rhythm. Applied to every top-level
+     <section>; min-height keeps each one filling the screen on typical
+     viewports while still letting taller content flow naturally. */
+  /* Note: deliberately NOT display:flex/grid here — a flex/grid container
+     "blockifies" its direct children (CSS box-generation spec), which
+     stretches any inline-block child (like .section-label) to full width.
+     Vertical rhythm instead comes from each section's own padding. */
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+    min-height: 100vh;
+  }
+
   /* Comic panel: paper card, thick ink border, hard offset shadow, a
      slight independent tilt per position for a "hand-placed" feel. Hover
-     straightens + lifts. Apply `.tilt` alongside for mouse-reactive 3D
-     tilt (wired in BaseLayout's script). */
+     straightens + lifts + grows a touch. Mouse-reactive 3D tilt is wired
+     in BaseLayout's script (desktop, fine-pointer only). */
   .panel {
     @apply relative rounded-[1.75rem] border-[3px] border-ink-900 bg-paper-100 shadow-comic transition-transform duration-200 ease-out;
   }
 
   .panel:hover {
-    @apply -translate-x-0.5 -translate-y-1 shadow-comic-lg;
+    @apply -translate-x-0.5 -translate-y-1 scale-[1.015] shadow-comic-lg;
   }
 
   .panel:nth-of-type(odd) {
@@ -63,36 +74,44 @@
   }
   .panel:nth-of-type(odd):hover,
   .panel:nth-of-type(even):hover {
-    transform: rotate(0deg) translate(-2px, -4px);
+    transform: rotate(0deg) translate(-2px, -4px) scale(1.015);
   }
 
   .section-label {
-    @apply inline-block rounded-full border-2 border-ink-900 bg-splash-yellow px-4 py-1 font-hand text-lg font-bold text-ink-900 shadow-comic-sm;
-    transform: rotate(-2deg);
+    @apply inline-block rounded-full border-2 border-ink-900 bg-splash-yellow px-4 py-1 font-hand text-lg font-bold text-ink-900 shadow-comic-sm animate-sway;
+    transform-origin: 50% 100%;
+  }
+
+  /* A twinkling accent star used as a list-bullet stand-in throughout. */
+  .bullet-star {
+    @apply inline-block animate-twinkle;
   }
 
   /* Sticker badge: used for tags/skills/certifications — rotates through
      the three splash colors via nth-child so a group reads as playful,
-     hand-applied stickers rather than a uniform grid. */
+     hand-applied stickers rather than a uniform grid. Hover gives it a
+     quick jiggle instead of a plain lift. */
   .tag-pill {
-    @apply inline-flex items-center gap-1 rounded-full border-2 border-ink-900 bg-paper-50 px-3 py-1 font-mono text-xs font-bold text-ink-900 shadow-comic-sm transition-transform duration-150 ease-out;
+    @apply inline-flex items-center gap-1 rounded-full border-2 border-ink-900 bg-paper-50 px-3 py-1 font-mono text-xs font-bold text-ink-900 shadow-comic-sm;
   }
   .tag-pill:hover {
-    @apply -translate-y-0.5;
+    animation: tag-shake 0.4s ease-in-out;
   }
   span.tag-pill:nth-of-type(3n + 1) { @apply bg-splash-yellow/70; }
   span.tag-pill:nth-of-type(3n + 2) { @apply bg-splash-blue/20; }
   span.tag-pill:nth-of-type(3n) { @apply bg-splash-red/15; }
 
-  /* Comic CTA button: hard shadow that "presses in" on click. */
+  /* Comic CTA button: hard shadow that "presses in" on click; a burst of
+     little star particles fires from the click point (see BaseLayout
+     script's `.comic-btn` click handler). */
   .comic-btn {
-    @apply inline-flex items-center gap-2 rounded-2xl border-[3px] border-ink-900 bg-paper-50 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wide text-ink-900 shadow-comic transition-all duration-150 ease-out;
+    @apply relative inline-flex items-center gap-2 overflow-visible rounded-2xl border-[3px] border-ink-900 bg-paper-50 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wide text-ink-900 shadow-comic transition-all duration-150 ease-out;
   }
   .comic-btn:hover {
     @apply -translate-x-0.5 -translate-y-0.5 bg-splash-yellow shadow-comic-lg;
   }
   .comic-btn:active {
-    @apply translate-x-0.5 translate-y-0.5 shadow-none;
+    @apply translate-x-0.5 translate-y-0.5 scale-95 shadow-none;
   }
 
   .link-underline {
@@ -142,13 +161,86 @@
   .reveal:nth-child(2) { transition-delay: 90ms; }
   .reveal:nth-child(3) { transition-delay: 180ms; }
   .reveal:nth-child(4) { transition-delay: 270ms; }
+
+  /* Section-level entrance: a bigger, more theatrical sweep applied to the
+     whole <section> as it's approached, layered underneath the smaller
+     per-panel `.reveal` stagger inside it. Each section picks a distinct
+     `data-anim` so the page doesn't repeat the same move six times. */
+  .section-enter {
+    opacity: 0;
+    transition: opacity 0.7s ease-out, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .section-enter.is-visible {
+    opacity: 1;
+    transform: none !important;
+  }
+  .section-enter[data-anim='slide-left'] { transform: translateX(-70px) rotate(-1.5deg); }
+  .section-enter[data-anim='slide-right'] { transform: translateX(70px) rotate(1.5deg); }
+  .section-enter[data-anim='drop'] { transform: translateY(-70px) scale(0.96); }
+  .section-enter[data-anim='rise'] { transform: translateY(70px) scale(0.96); }
+  .section-enter[data-anim='flip'] { transform: perspective(900px) rotateX(20deg) scale(0.94); }
 }
 
 /* No-JS / JS-failure fallback: if the reveal script never runs, content
    must not stay permanently hidden. */
-html:not(.js-reveal-ready) .reveal {
+html:not(.js-reveal-ready) .reveal,
+html:not(.js-reveal-ready) .section-enter {
   opacity: 1;
   transform: none;
+}
+
+/* --- Custom comic-character cursor (desktop, fine-pointer only) --------- */
+/* A small star-faced mascot that trails the real pointer. Native cursor is
+   hidden only once JS confirms a fine pointer + no reduced-motion (class
+   added by BaseLayout's script), so touch/keyboard/reduced-motion users
+   always keep their normal, familiar cursor. */
+html.custom-cursor-active,
+html.custom-cursor-active a,
+html.custom-cursor-active button,
+html.custom-cursor-active .panel {
+  cursor: none !important;
+}
+
+#cursor-char {
+  @apply pointer-events-none fixed left-0 top-0 z-[999] h-10 w-10;
+  transform: translate(-50%, -50%);
+}
+/* Tailwind's plain `.hidden` utility (display:none) — toggled via
+   classList in BaseLayout's script, not baked into the ID rule above, so
+   JS can actually add/remove it. */
+#cursor-char svg {
+  overflow: visible;
+}
+#cursor-char .face-idle { display: block; }
+#cursor-char .face-hover { display: none; }
+#cursor-char.is-hover {
+  transform: translate(-50%, -50%) scale(1.35);
+}
+#cursor-char.is-hover .face-idle { display: none; }
+#cursor-char.is-hover .face-hover { display: block; }
+#cursor-char.is-active {
+  transform: translate(-50%, -50%) scale(0.85);
+}
+
+/* Little star-burst particles fired from a `.comic-btn` on click (spawned
+   and removed by BaseLayout's script). */
+.click-burst-particle {
+  position: fixed;
+  z-index: 998;
+  pointer-events: none;
+  font-size: 1rem;
+  animation: burst-particle 0.6s ease-out forwards;
+}
+
+@keyframes tag-shake {
+  0%, 100% { transform: rotate(0deg) translateY(-2px); }
+  25% { transform: rotate(-8deg) translateY(-2px); }
+  75% { transform: rotate(8deg) translateY(-2px); }
+}
+
+@keyframes burst-particle {
+  0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translate(var(--bx), var(--by)) scale(0.4) rotate(var(--br)); }
 }
 
 /* Respect reduced-motion preference for all custom animation utilities. */
@@ -160,7 +252,12 @@ html:not(.js-reveal-ready) .reveal {
     scroll-behavior: auto !important;
   }
 
-  .reveal {
+  html {
+    scroll-snap-type: none !important;
+  }
+
+  .reveal,
+  .section-enter {
     opacity: 1 !important;
     transform: none !important;
   }
@@ -170,14 +267,16 @@ html:not(.js-reveal-ready) .reveal {
     transform: none !important;
   }
 
-  #cursor-dot {
+  #cursor-char {
     display: none !important;
   }
 }
 
-/* Touch devices: no hover-tilt/cursor dot; keep panels straight-ish. */
-@media (hover: none) {
-  #cursor-dot {
-    display: none !important;
-  }
-}
+/* Note: no `@media (hover: none)` fallback here on purpose — the JS gate
+   in BaseLayout (`hover:hover` + `pointer:fine` matchMedia check) is the
+   single source of truth for whether the mascot cursor runs at all; #cursor-char
+   stays hidden by default and only ever gets shown by that script. A CSS
+   media-query fallback here previously fought that JS check on
+   environments where `hover`/`pointer` report inconsistently (some
+   automated browsers, some dual-input touch laptops), hiding the cursor
+   even when JS had correctly enabled it. */

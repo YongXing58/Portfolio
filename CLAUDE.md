@@ -38,6 +38,15 @@ custom illustration accents, mouse-reactive/animated throughout — "not just
 a boring plain design." Treat this as the standing brief for all future
 visual work on this site, not a one-off request.
 
+**v2.1 — added on top of v2 (current):** the user asked for three more
+things, all now implemented — (1) each section should feel like its own
+"page" that the scroll settles onto one at a time rather than free-flowing
+past everything, with a distinct entrance animation per section; (2) a
+unique, cartoony custom cursor instead of the OS default; (3) more life
+overall — shaking/reactive hover and click states beyond a plain
+pop-with-shadow. See "One section at a time," "Custom cursor," and "Click
+& hover micro-interactions" below.
+
 **Palette — "Comic Paper"**
 - Paper (background/panels): `paper-50 #FFFDF8` (page bg), `paper-100
   #FFF8EA` (panel bg), `paper-200 #F4E9D0` (border tint)
@@ -81,19 +90,89 @@ don't invent new card styles):**
 - Scroll-reveal on every `.reveal` element (fade + slide + slight scale),
   staggered per sibling, via the `IntersectionObserver` script in
   `BaseLayout.astro`.
-- Custom trailing cursor dot (`#cursor-dot`) that lerps toward the pointer
-  each frame and grows/tints over interactive elements — desktop only.
 - Mouse-reactive tilt on every `.panel` (see above).
-- `.comic-btn` / `.tag-pill` hover-lift + press-down `:active` states.
-- All of the above is **gated behind `hover: hover` and `pointer: fine`
-  media queries** (skipped on touch) and **fully disabled under
-  `prefers-reduced-motion: reduce`** (see the guards at the bottom of
-  `global.css` and the top of the mouse-effects script) — reactive chrome
-  must never become the only way to perceive content, and must never run
-  where it'd just drain a phone battery for no visual benefit.
-- No-JS fallback: if the reveal script fails to load, `.reveal` content
-  stays fully visible (CSS rule keyed off a `.js-reveal-ready` class added
-  synchronously in `<head>`) rather than staying hidden forever.
+- `.comic-btn` / `.tag-pill` hover states — see "Click & hover
+  micro-interactions" below; these are no longer a plain lift+shadow.
+- All mouse-driven effects are **gated behind `hover: hover` and
+  `pointer: fine` media queries** (skipped on touch) and **fully disabled
+  under `prefers-reduced-motion: reduce`** (see the guards at the bottom of
+  `global.css` and the top of each script) — reactive chrome must never
+  become the only way to perceive content, and must never run where it'd
+  just drain a phone battery for no visual benefit.
+- No-JS fallback: if the reveal script fails to load, `.reveal`/
+  `.section-enter` content stays fully visible (CSS rule keyed off a
+  `.js-reveal-ready` class added synchronously in `<head>`) rather than
+  staying hidden forever.
+
+**One section at a time.** Every top-level `<section>`/`<footer>` carries
+`.snap-section` (`scroll-snap-align: start`, `min-height: 100vh`) and
+`html` sets `scroll-snap-type: y proximity`. `proximity`, not `mandatory`,
+on purpose — a section taller than the viewport (e.g. Skills+Education on
+a narrow phone) never traps the scroll fighting the user; it snaps when
+comfortably close to a boundary and otherwise just flows. Disabled
+entirely under `prefers-reduced-motion`.
+
+Each section also carries `.section-enter` + a `data-anim` attribute for a
+bigger, distinct entrance sweep as it's approached — layered underneath
+the smaller per-panel `.reveal` stagger already inside it, so scrolling
+between sections feels like turning a comic page, not just a fade:
+- Hero (`#about`): `rise`
+- Experience: `slide-left`
+- Skills & Education: `slide-right`
+- Certifications: `drop`
+- Projects: `flip`
+- Contact/Footer: `rise`
+
+Both `.reveal` and `.section-enter` are driven by the *same*
+`IntersectionObserver` in `BaseLayout.astro` (selector
+`'.reveal, .section-enter'`) — don't add a second observer for new motion,
+extend this one.
+
+⚠️ **Known trap:** don't give `.snap-section` (or any section wrapper)
+`display: flex`/`grid`. A flex/grid container "blockifies" its direct
+children per the CSS box-generation spec — it silently turns any
+inline-block child (e.g. `.section-label`) into a full-width block. This
+broke the hero label once already; `.snap-section` deliberately has no
+`display` override, and vertical rhythm comes from each section's own
+padding instead. If a section ever needs its content vertically centered,
+center an *inner wrapper div*, not the section element itself.
+
+**Custom cursor.** `#cursor-char` in `BaseLayout.astro` is a small
+star-mascot SVG (reuses the hero star's path) that trails the real pointer
+with a lerp, drawn with two swappable face groups (`.face-idle` /
+`.face-hover`, toggled via the `.is-hover` class) — idle is a calm smile,
+hover (over any `a`, `button`, or `.panel`) is a wide-eyed excited face and
+the mascot grows ~35%. `.is-active` (mousedown) shrinks it slightly for a
+little "press" feel. The OS cursor is hidden (`cursor: none`) only via the
+`html.custom-cursor-active` class, which JS adds *only* after confirming
+`hover:hover` + `pointer:fine` + no reduced-motion — never hide the real
+cursor by default in CSS alone.
+
+⚠️ **Known trap:** the element starts with a literal `class="hidden"` in
+the markup (Tailwind's `.hidden` utility, toggled by `classList` in the
+script) — do **not** move that `hidden` into the `#cursor-char { @apply
+... }` CSS rule instead. Baking `hidden` into an ID-selector rule makes
+`display:none` permanent for that ID, and `classList.remove('hidden')`
+then does nothing because the element never had the class to begin with.
+This exact bug shipped once already; the fix was moving `hidden` onto the
+element and out of the `@apply` list.
+
+**Click & hover micro-interactions (beyond pop + shadow):**
+- `.tag-pill:hover` — a quick jiggle/shake keyframe (`tag-shake`, plain
+  CSS, not a Tailwind utility since it's pseudo-class-triggered), not a
+  translate.
+- `.panel:hover` — tilt (mouse-reactive, see above) *plus* a slight
+  `scale(1.015)` bump layered on top of the lift+shadow.
+- `.comic-btn` click — spawns 6 little star (★ / ✦) particles from the
+  click point that fly outward on random angles and fade
+  (`.click-burst-particle` + `burst-particle` keyframe, spawned/removed by
+  a `document`-level click listener in `BaseLayout.astro` — delegated, so
+  it automatically covers every current and future `.comic-btn`, no
+  per-button wiring needed).
+- `.section-label` has a continuous slow `sway` idle animation (tape-on-a-
+  sticker flutter); bullet "✦/★" markers (`.bullet-star`) have a slow
+  `twinkle` opacity/scale pulse. Both are subtle and infinite, gated by the
+  same reduced-motion rule as everything else.
 
 **Overall vibe:** unique, playful, hand-crafted — a comic book/zine feel
 over generic template polish. Still built to be fast (no image assets, no
@@ -244,3 +323,29 @@ recruiter to scan the actual content, not just admire the chrome.
   IBM Plex Sans / IBM Plex Mono). Favicon updated to match. Verified build
   (0 errors) and live in-browser on desktop + 375px mobile, including the
   hover-tilt and mobile nav. See §3 for the full new design-direction spec.
+- **v2.1 — one-section-at-a-time scroll, custom mascot cursor, more life.**
+  Three more explicit asks: (1) scroll-snap so each section reads as its
+  own "page" (`.snap-section` + `scroll-snap-type: y proximity` on
+  `html`), with a distinct `.section-enter` sweep per section
+  (slide-left/slide-right/drop/flip/rise) layered under the existing
+  per-panel `.reveal` stagger; (2) replaced `#cursor-dot` with
+  `#cursor-char`, a trailing star-mascot cursor with idle/excited face
+  states and a press-down state, OS cursor hidden only once JS confirms
+  fine-pointer + no-reduced-motion; (3) more reactive/lively
+  micro-interactions — `.tag-pill` hover-shake, `.panel` hover now also
+  scales slightly, `.comic-btn` clicks fire a 6-star particle burst,
+  `.section-label` sways continuously and bullet stars twinkle.
+  **Fixed two real bugs found during verification** (both now documented
+  as "known traps" in §3 so they don't recur): `.snap-section` originally
+  used `display:flex` to vertically center content, which CSS-blockified
+  the hero's inline-block `.section-label` into a full-width block —
+  removed the flex, centering now happens per-section via padding only;
+  and the cursor mascot's `hidden` state was baked into the `#cursor-char`
+  ID rule via `@apply hidden` instead of being a literal class on the
+  element, so `classList.remove('hidden')` in JS was a no-op and the
+  cursor never appeared — fixed by moving `hidden` onto the element itself.
+  Verified: 0 build errors, full 6-section scroll-snap walkthrough,
+  mascot idle/hover/active states, and click-burst all confirmed live in
+  the browser on desktop; mobile (375px) confirmed no mascot cursor
+  (correctly touch-gated) and natural scroll through the taller
+  Skills+Education section.

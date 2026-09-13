@@ -52,11 +52,26 @@ export default {
           from: { strokeDashoffset: '400' },
           to: { strokeDashoffset: '0' },
         },
+        sway: {
+          '0%, 100%': { transform: 'rotate(-2deg)' },
+          '50%': { transform: 'rotate(1.5deg)' },
+        },
+        twinkle: {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.4', transform: 'scale(0.8)' },
+        },
+        shake: {
+          '0%, 100%': { transform: 'rotate(0deg) translateY(-2px)' },
+          '25%': { transform: 'rotate(-8deg) translateY(-2px)' },
+          '75%': { transform: 'rotate(8deg) translateY(-2px)' },
+        },
       },
       animation: {
         'pop-in': 'pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both',
         wiggle: 'wiggle 4s ease-in-out infinite',
         float: 'float 5s ease-in-out infinite',
+        sway: 'sway 3.5s ease-in-out infinite',
+        twinkle: 'twinkle 2.4s ease-in-out infinite',
       },
     },
   },

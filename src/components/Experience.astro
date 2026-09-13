@@ -2,7 +2,7 @@
 import { resume } from '@data/resume';
 ---
 
-<section id="experience" class="mx-auto max-w-5xl px-6 py-16">
+<section id="experience" class="snap-section section-enter mx-auto max-w-5xl px-6 py-16" data-anim="slide-left">
   <p class="section-label reveal mb-10">Experience</p>
 
   <div class="space-y-10">
@@ -22,7 +22,7 @@ import { resume } from '@data/resume';
           <ul class="mt-4 space-y-2 text-sm leading-relaxed text-ink-700 sm:text-base">
             {job.highlights.map((point) => (
               <li class="flex gap-3">
-                <span class="mt-1.5 text-splash-red">✦</span>
+                <span class="bullet-star mt-1.5 text-splash-red">✦</span>
                 <span>{point}</span>
               </li>
             ))}
