@@ -132,9 +132,18 @@ readable, still fintech-credible (i.e. not too playful/startup-y).
 - [ ] `profile.links.github` and `profile.links.website` still `TODO` —
       need the user's actual GitHub handle / personal site (if any).
 - [ ] Add real `resumePdf` file to `public/resume.pdf`.
-- [ ] Add scroll-reveal IntersectionObserver script for `.reveal` elements
-      (classes are already present on `Experience`/`ProjectCard`, behavior
-      not yet wired).
+- [x] Scroll-reveal wired up — `BaseLayout.astro` sets up an
+      IntersectionObserver over all `.reveal` elements (Experience,
+      ProjectCard, Skills, Education, Certifications), fading/sliding each
+      in once as it enters the viewport with a slight per-item stagger.
+      No-JS and `prefers-reduced-motion` fallbacks both keep content
+      visible (see `global.css`).
+- [x] **Mobile nav fixed** — the header's nav links were `hidden sm:flex`
+      with no mobile alternative at all (a real bug, not just missing
+      polish). Added a hamburger toggle + slide-down menu for `<sm`
+      viewports; verified working on a 375px viewport in the browser.
+- [x] Added `scroll-margin-top` on all section anchors so the sticky header
+      never overlaps a section heading when jumping via nav links.
 - [ ] Decide on a contact form approach (Formspree/Resend) vs. mailto-only.
 - [ ] Add OG image (`public/og-image.png`) and social meta tags.
 - [x] `npm install` and `npm run dev` verified working (repeated checks after
@@ -170,3 +179,12 @@ readable, still fintech-credible (i.e. not too playful/startup-y).
   demo/repo/case-study links exist for any project. Set `links: {}` across
   the board and updated `ProjectCard.astro` to hide the links row when
   empty instead of rendering an empty div. 1 project still pending.
+- **Deployed to Netlify** — repo pushed to GitHub
+  (github.com/YongXing58/Portfolio), Netlify connected for git-based
+  auto-deploy from `main`. Live at yongxingfu.netlify.app.
+- **Scroll-reveal + mobile nav fix** — wired up IntersectionObserver-based
+  reveal-on-scroll for all `.reveal` elements site-wide, with staggered
+  timing, no-JS fallback, and reduced-motion support. Also fixed a real
+  bug: the header had no working navigation at all on mobile (`sm:flex`
+  with no fallback) — added a hamburger menu. Added `scroll-margin-top` so
+  anchor-jump navigation doesn't get hidden under the sticky header.

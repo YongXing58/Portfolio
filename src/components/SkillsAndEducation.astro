@@ -9,7 +9,7 @@ import { resume } from '@data/resume';
       <div class="space-y-6">
         {
           resume.skills.map((group) => (
-            <div>
+            <div class="reveal">
               <h4 class="mb-2 text-sm font-medium text-paper-100">{group.category}</h4>
               <div class="flex flex-wrap gap-2">
                 {group.items.map((item) => (
@@ -27,7 +27,7 @@ import { resume } from '@data/resume';
       <div class="space-y-6">
         {
           resume.education.map((edu) => (
-            <div class="panel p-5">
+            <div class="panel reveal p-5">
               <h4 class="text-sm font-semibold text-paper-100 sm:text-base">{edu.institution}</h4>
               <p class="mt-1 text-sm text-paper-400">{edu.degree}</p>
               <p class="mt-1 font-mono text-xs text-paper-400">
