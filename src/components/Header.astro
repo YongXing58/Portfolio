@@ -9,41 +9,43 @@ const navItems = [
 ];
 ---
 
-<header class="sticky top-0 z-50 border-b border-ink-700/60 bg-ink-950/80 backdrop-blur">
-  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-    <a href="#top" class="font-heading text-sm font-semibold tracking-wide text-paper-100">
+<header class="sticky top-0 z-50 border-b-[3px] border-ink-900 bg-paper-50/95 backdrop-blur">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+    <a href="#top" class="font-display text-xl text-ink-900 -rotate-2 transition-transform hover:rotate-0">
       {resume.profile.name}
     </a>
-    <nav class="hidden gap-6 font-mono text-xs uppercase tracking-widest text-paper-400 sm:flex">
+    <nav class="hidden gap-2 font-hand text-lg font-bold text-ink-900 sm:flex">
       {
-        navItems.map((item) => (
-          <a href={item.href} class="transition-colors hover:text-accent-teal">
+        navItems.map((item, i) => (
+          <a
+            href={item.href}
+            class:list={[
+              'rounded-full border-2 border-ink-900 px-4 py-1 shadow-comic-sm transition-all hover:-translate-y-0.5 hover:shadow-comic',
+              i % 3 === 0 ? 'bg-splash-yellow/60' : i % 3 === 1 ? 'bg-splash-blue/20' : 'bg-splash-red/15',
+            ]}
+          >
             {item.label}
           </a>
         ))
       }
     </nav>
     <div class="flex items-center gap-3">
-      <a
-        href={resume.profile.resumePdf}
-        class="tag-pill hover:border-accent-teal/60 hover:text-accent-teal transition-colors"
-        download
-      >
+      <a href={resume.profile.resumePdf} class="comic-btn hidden sm:inline-flex" download>
         Resume ↓
       </a>
       <button
         type="button"
         id="mobile-nav-toggle"
-        class="tag-pill grid h-8 w-8 place-items-center p-0 sm:hidden"
+        class="comic-btn grid h-10 w-10 place-items-center p-0 sm:hidden"
         aria-expanded="false"
         aria-controls="mobile-nav"
         aria-label="Toggle navigation menu"
       >
         <span class="sr-only">Toggle navigation menu</span>
-        <svg id="mobile-nav-icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+        <svg id="mobile-nav-icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-5 w-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
-        <svg id="mobile-nav-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden h-4 w-4">
+        <svg id="mobile-nav-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="hidden h-5 w-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M6 18L18 6" />
         </svg>
       </button>
@@ -52,15 +54,18 @@ const navItems = [
 
   <nav
     id="mobile-nav"
-    class="hidden flex-col gap-1 border-t border-ink-700/60 bg-ink-950/95 px-6 py-4 font-mono text-xs uppercase tracking-widest text-paper-400 sm:hidden"
+    class="hidden flex-col gap-2 border-t-[3px] border-ink-900 bg-paper-100 px-6 py-4 font-hand text-lg font-bold text-ink-900 sm:hidden"
   >
     {
       navItems.map((item) => (
-        <a href={item.href} class="rounded-lg px-3 py-3 transition-colors hover:bg-ink-800 hover:text-accent-teal">
+        <a href={item.href} class="rounded-xl border-2 border-ink-900 bg-paper-50 px-4 py-3 shadow-comic-sm transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none">
           {item.label}
         </a>
       ))
     }
+    <a href={resume.profile.resumePdf} class="comic-btn justify-center font-mono text-sm normal-case" download>
+      Download Resume ↓
+    </a>
   </nav>
 </header>
 

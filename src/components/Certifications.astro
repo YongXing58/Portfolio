@@ -8,12 +8,12 @@ if (!resume.certifications.length) {
 
 {
   resume.certifications.length > 0 && (
-    <section id="certifications" class="mx-auto max-w-5xl px-6 pb-20">
-      <p class="section-label mb-8">Licenses &amp; Certifications</p>
-      <ul class="grid gap-3 sm:grid-cols-2">
+    <section id="certifications" class="mx-auto max-w-5xl px-6 pb-16">
+      <p class="section-label reveal mb-10">Licenses &amp; Certifications</p>
+      <ul class="grid gap-4 sm:grid-cols-2">
         {resume.certifications.map((cert) => (
-          <li class="panel reveal flex items-center gap-3 px-5 py-4 text-sm text-paper-400">
-            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-indigo/70" />
+          <li class="panel reveal flex items-center gap-3 px-5 py-4 text-sm text-ink-700">
+            <span class="text-lg text-splash-yellow">★</span>
             <span>{cert}</span>
           </li>
         ))}

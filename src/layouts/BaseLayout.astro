@@ -22,11 +22,12 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
 
-    <!-- Google Fonts: Space Grotesk (headings) + IBM Plex Sans/Mono (body/labels) -->
+    <!-- Google Fonts: Permanent Marker (display) + Caveat (hand accents)
+         + Inter (body) + Space Mono (meta/dates/tags) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
 
@@ -38,6 +39,7 @@ const {
     </script>
   </head>
   <body>
+    <div id="cursor-dot"></div>
     <slot />
 
     <script>
@@ -60,6 +62,75 @@ const {
         document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
       } else {
         document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
+
+    <script>
+      // Mouse-reactive chrome: a trailing cursor dot + a subtle 3D tilt on
+      // comic panels as the pointer moves over them. Both are pure visual
+      // flourish, so they're skipped entirely for touch devices and for
+      // anyone who has asked for reduced motion.
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      if (!prefersReducedMotion && hasFinePointer) {
+        // --- Trailing cursor dot, lerped toward the real pointer each frame.
+        const dot = document.getElementById('cursor-dot');
+        if (dot) {
+          let targetX = window.innerWidth / 2;
+          let targetY = window.innerHeight / 2;
+          let x = targetX;
+          let y = targetY;
+          let revealed = false;
+
+          window.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+            if (!revealed) {
+              dot.classList.remove('hidden');
+              revealed = true;
+            }
+          });
+
+          // Grow the dot over interactive elements to hint clickability.
+          document.addEventListener('mouseover', (e) => {
+            const target = e.target;
+            if (target instanceof Element && target.closest('a, button, .panel')) {
+              dot.style.width = '2.25rem';
+              dot.style.height = '2.25rem';
+              dot.style.backgroundColor = 'rgba(246, 190, 59, 0.5)';
+            }
+          });
+          document.addEventListener('mouseout', (e) => {
+            const target = e.target;
+            if (target instanceof Element && target.closest('a, button, .panel')) {
+              dot.style.width = '';
+              dot.style.height = '';
+              dot.style.backgroundColor = '';
+            }
+          });
+
+          const tick = () => {
+            x += (targetX - x) * 0.18;
+            y += (targetY - y) * 0.18;
+            dot.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+            requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+
+        // --- Subtle tilt on comic panels, following the pointer within each.
+        document.querySelectorAll<HTMLElement>('.panel').forEach((panel) => {
+          panel.addEventListener('mousemove', (e: MouseEvent) => {
+            const rect = panel.getBoundingClientRect();
+            const px = (e.clientX - rect.left) / rect.width - 0.5;
+            const py = (e.clientY - rect.top) / rect.height - 0.5;
+            panel.style.transform = `rotate(0deg) translate(-2px, -4px) perspective(600px) rotateX(${py * -6}deg) rotateY(${px * 6}deg)`;
+          });
+          panel.addEventListener('mouseleave', () => {
+            panel.style.transform = '';
+          });
+        });
       }
     </script>
   </body>

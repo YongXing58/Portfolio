@@ -8,17 +8,19 @@ interface Props {
 const { project } = Astro.props;
 ---
 
-<article class="panel reveal group p-6 transition-colors hover:border-accent-teal/50 sm:p-8">
+<article class="panel reveal p-6 sm:p-8">
   <div class="flex flex-wrap items-baseline justify-between gap-2">
-    <h3 class="text-lg font-semibold text-paper-100 sm:text-xl">{project.title}</h3>
-    <span class="font-mono text-xs text-paper-400">{project.date}</span>
+    <h3 class="text-xl text-ink-900 sm:text-2xl">{project.title}</h3>
+    <span class="rounded-full border-2 border-ink-900 bg-paper-50 px-3 py-1 font-mono text-xs font-bold text-ink-700">
+      {project.date}
+    </span>
   </div>
 
-  {project.role ? <p class="mt-1 font-mono text-xs text-accent-teal/80">{project.role}</p> : null}
+  {project.role ? <p class="mt-1 font-hand text-lg font-bold text-splash-red">{project.role}</p> : null}
 
-  <p class="mt-2 text-sm text-paper-400 sm:text-base">{project.summary}</p>
+  <p class="mt-3 text-sm text-ink-700 sm:text-base">{project.summary}</p>
 
-  {project.description ? <p class="mt-3 text-sm leading-relaxed text-paper-400/90">{project.description}</p> : null}
+  {project.description ? <p class="mt-3 text-sm leading-relaxed text-ink-700/90">{project.description}</p> : null}
 
   {
     project.tags?.length ? (

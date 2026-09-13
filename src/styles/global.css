@@ -7,63 +7,141 @@
     @apply scroll-smooth;
   }
 
-  body {
-    @apply bg-ink-950 text-paper-100 font-body antialiased bg-grid-glow bg-no-repeat;
-  }
-
   /* Offset anchor-jump targets so the sticky header never covers a
      section's heading when navigating via #hash links. */
   section[id],
   #top {
-    scroll-margin-top: 5rem;
+    scroll-margin-top: 6rem;
+  }
+
+  body {
+    @apply bg-paper-50 text-ink-900 font-body antialiased;
+    /* Warm paper: subtle halftone dot grid + faint grain, no image assets. */
+    background-image:
+      radial-gradient(circle, rgba(22, 19, 17, 0.07) 1px, transparent 1.2px);
+    background-size: 16px 16px;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    @apply font-heading tracking-tight;
+    @apply font-display tracking-wide text-ink-900;
   }
 
   ::selection {
-    @apply bg-accent-teal/30 text-paper-100;
+    @apply bg-splash-yellow/60 text-ink-900;
+  }
+
+  /* Custom cursor-follow dot (desktop, fine-pointer only — see BaseLayout
+     script). Hidden by default; JS reveals it once positioned. */
+  #cursor-dot {
+    @apply pointer-events-none fixed left-0 top-0 z-[999] hidden h-6 w-6 rounded-full border-2 border-ink-900 mix-blend-multiply;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s ease, height 0.15s ease, background-color 0.15s ease;
   }
 }
 
 @layer components {
+  /* Comic panel: paper card, thick ink border, hard offset shadow, a
+     slight independent tilt per position for a "hand-placed" feel. Hover
+     straightens + lifts. Apply `.tilt` alongside for mouse-reactive 3D
+     tilt (wired in BaseLayout's script). */
   .panel {
-    @apply border border-ink-700 bg-ink-900/60 backdrop-blur-sm rounded-2xl;
+    @apply relative rounded-[1.75rem] border-[3px] border-ink-900 bg-paper-100 shadow-comic transition-transform duration-200 ease-out;
+  }
+
+  .panel:hover {
+    @apply -translate-x-0.5 -translate-y-1 shadow-comic-lg;
+  }
+
+  .panel:nth-of-type(odd) {
+    transform: rotate(-0.6deg);
+  }
+  .panel:nth-of-type(even) {
+    transform: rotate(0.6deg);
+  }
+  .panel:nth-of-type(odd):hover,
+  .panel:nth-of-type(even):hover {
+    transform: rotate(0deg) translate(-2px, -4px);
   }
 
   .section-label {
-    @apply font-mono text-xs uppercase tracking-[0.2em] text-accent-teal/80;
+    @apply inline-block rounded-full border-2 border-ink-900 bg-splash-yellow px-4 py-1 font-hand text-lg font-bold text-ink-900 shadow-comic-sm;
+    transform: rotate(-2deg);
   }
 
+  /* Sticker badge: used for tags/skills/certifications — rotates through
+     the three splash colors via nth-child so a group reads as playful,
+     hand-applied stickers rather than a uniform grid. */
   .tag-pill {
-    @apply inline-flex items-center rounded-full border border-ink-700 bg-ink-800 px-3 py-1 font-mono text-xs text-paper-400;
+    @apply inline-flex items-center gap-1 rounded-full border-2 border-ink-900 bg-paper-50 px-3 py-1 font-mono text-xs font-bold text-ink-900 shadow-comic-sm transition-transform duration-150 ease-out;
+  }
+  .tag-pill:hover {
+    @apply -translate-y-0.5;
+  }
+  span.tag-pill:nth-of-type(3n + 1) { @apply bg-splash-yellow/70; }
+  span.tag-pill:nth-of-type(3n + 2) { @apply bg-splash-blue/20; }
+  span.tag-pill:nth-of-type(3n) { @apply bg-splash-red/15; }
+
+  /* Comic CTA button: hard shadow that "presses in" on click. */
+  .comic-btn {
+    @apply inline-flex items-center gap-2 rounded-2xl border-[3px] border-ink-900 bg-paper-50 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wide text-ink-900 shadow-comic transition-all duration-150 ease-out;
+  }
+  .comic-btn:hover {
+    @apply -translate-x-0.5 -translate-y-0.5 bg-splash-yellow shadow-comic-lg;
+  }
+  .comic-btn:active {
+    @apply translate-x-0.5 translate-y-0.5 shadow-none;
   }
 
   .link-underline {
-    @apply underline decoration-accent-teal/40 decoration-2 underline-offset-4 transition-colors hover:decoration-accent-teal hover:text-accent-teal;
+    @apply relative font-bold text-ink-900 transition-colors hover:text-splash-red;
+    text-decoration: underline;
+    text-decoration-color: theme('colors.splash.red');
+    text-decoration-thickness: 3px;
+    text-decoration-style: wavy;
+    text-underline-offset: 4px;
   }
 
-  /* Scroll-reveal: elements start hidden/offset, JS (scrollReveal.ts via
-     BaseLayout) adds .is-visible via IntersectionObserver as each enters
-     the viewport. Sibling items stagger slightly using their DOM order. */
+  /* Hand-drawn wavy underline used under section headings — a single
+     squiggly SVG stroke, drawn on scroll-reveal via stroke-dashoffset. */
+  .doodle-underline {
+    display: block;
+    width: 9rem;
+    max-width: 60%;
+    height: 14px;
+    margin-top: 0.25rem;
+  }
+  .doodle-underline path {
+    fill: none;
+    stroke: theme('colors.splash.red');
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+  }
+  .reveal.is-visible .doodle-underline path {
+    animation: draw-underline 0.7s ease-out 0.15s forwards;
+  }
+
+  /* Scroll-reveal: elements start hidden/offset, JS (BaseLayout script)
+     adds .is-visible via IntersectionObserver as each enters the
+     viewport. Sibling items stagger slightly using their DOM order. */
   .reveal {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(28px) scale(0.97);
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .reveal.is-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 
-  .reveal:nth-child(2) { transition-delay: 80ms; }
-  .reveal:nth-child(3) { transition-delay: 160ms; }
-  .reveal:nth-child(4) { transition-delay: 240ms; }
+  .reveal:nth-child(2) { transition-delay: 90ms; }
+  .reveal:nth-child(3) { transition-delay: 180ms; }
+  .reveal:nth-child(4) { transition-delay: 270ms; }
 }
 
 /* No-JS / JS-failure fallback: if the reveal script never runs, content
@@ -85,5 +163,21 @@ html:not(.js-reveal-ready) .reveal {
   .reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .panel:nth-of-type(odd),
+  .panel:nth-of-type(even) {
+    transform: none !important;
+  }
+
+  #cursor-dot {
+    display: none !important;
+  }
+}
+
+/* Touch devices: no hover-tilt/cursor dot; keep panels straight-ish. */
+@media (hover: none) {
+  #cursor-dot {
+    display: none !important;
   }
 }

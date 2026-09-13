@@ -1,34 +1,62 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // "Dark Tech Sleek" palette — see CLAUDE.md for rationale.
-        ink: {
-          950: '#0D0F12', // base background
-          900: '#13161B', // panel background
-          800: '#1B1F26', // raised panel / card
-          700: '#2A2F38', // borders
-        },
+        // "Comic Paper" palette — warm off-white paper + near-black ink,
+        // with three accent colors used sparingly as "splashes" (badges,
+        // underlines, halftone dots) — never as large fills. See CLAUDE.md.
         paper: {
-          100: '#E8E8E6', // primary text
-          400: '#9AA0A6', // secondary text
+          50: '#FFFDF8', // page background
+          100: '#FFF8EA', // panel background
+          200: '#F4E9D0', // panel border tint / pressed states
         },
-        accent: {
-          teal: '#5EEAD4',
-          indigo: '#818CF8',
+        ink: {
+          900: '#161311', // primary text, borders
+          700: '#4A4038', // secondary text
+          400: '#8A7F72', // tertiary / meta text
+        },
+        splash: {
+          red: '#F0483E', // primary accent — CTAs, key badges
+          blue: '#3A86C8', // secondary accent — links, tags
+          yellow: '#F6BE3B', // tertiary accent — highlights, stars
         },
       },
       fontFamily: {
-        heading: ['"Space Grotesk"', 'sans-serif'],
-        body: ['"IBM Plex Sans"', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'monospace'],
+        display: ['"Permanent Marker"', 'cursive'], // big comic headings
+        hand: ['"Caveat"', 'cursive'], // handwritten accents/labels
+        body: ['"Inter"', 'sans-serif'], // readable body copy
+        mono: ['"Space Mono"', 'monospace'], // dates, meta, tags
       },
-      backgroundImage: {
-        'grid-glow':
-          'radial-gradient(circle at 20% 20%, rgba(94,234,212,0.08), transparent 40%), radial-gradient(circle at 80% 0%, rgba(129,140,248,0.08), transparent 40%)',
+      boxShadow: {
+        comic: '5px 5px 0 0 #161311',
+        'comic-sm': '3px 3px 0 0 #161311',
+        'comic-lg': '8px 8px 0 0 #161311',
+        'comic-red': '5px 5px 0 0 #F0483E',
+      },
+      keyframes: {
+        'pop-in': {
+          '0%': { opacity: '0', transform: 'scale(0.9) translateY(16px)' },
+          '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-1.5deg)' },
+          '50%': { transform: 'rotate(1.5deg)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+        'draw-underline': {
+          from: { strokeDashoffset: '400' },
+          to: { strokeDashoffset: '0' },
+        },
+      },
+      animation: {
+        'pop-in': 'pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both',
+        wiggle: 'wiggle 4s ease-in-out infinite',
+        float: 'float 5s ease-in-out infinite',
       },
     },
   },

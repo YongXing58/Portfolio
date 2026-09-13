@@ -30,38 +30,76 @@ detailed second (brief format now; more depth added over time).
 
 ## 3. Design Direction
 
-**Inspiration:** [tiagofragoso.com](https://tiagofragoso.com/#links) — liked
-the *structure* (content organized into distinct illustrated "panels"/sections)
-and the hand-crafted, personal feel. We are **not** copying its literal visual
-style (hand-drawn illustration, paper texture, Portuguese copywriter branding).
-Instead we translate the panel-based structure into something more technical.
+**v2 — "Comic Paper" (current).** The user explicitly asked to completely
+replace the original "Dark Tech Sleek" direction (§3 below is the full
+replacement, not an iteration on it): white/black base with a splash of
+color, warm hand-drawn paper aesthetic, comic-panel-style sections, playful
+custom illustration accents, mouse-reactive/animated throughout — "not just
+a boring plain design." Treat this as the standing brief for all future
+visual work on this site, not a one-off request.
 
-**Chosen palette: "Dark Tech Sleek"**
-- Background: `ink-950 #0D0F12`, panels `ink-900 #13161B` / `ink-800 #1B1F26`
-- Text: `paper-100 #E8E8E6` (primary), `paper-400 #9AA0A6` (secondary)
-- Accents: `accent-teal #5EEAD4`, `accent-indigo #818CF8` — used sparingly for
-  links, highlights, tags, glow effects. Never as large background fills.
-- Subtle radial gradient glow behind the page (`bg-grid-glow` utility), glass
-  panels (`.panel` — bordered, low-opacity fill, backdrop blur).
+**Palette — "Comic Paper"**
+- Paper (background/panels): `paper-50 #FFFDF8` (page bg), `paper-100
+  #FFF8EA` (panel bg), `paper-200 #F4E9D0` (border tint)
+- Ink (text/borders/shadows): `ink-900 #161311` (primary text, all borders,
+  hard shadows), `ink-700 #4A4038` (secondary text), `ink-400 #8A7F72`
+  (meta/tertiary text)
+- Splash accents (used sparingly — badges, underlines, stars, tag rotation
+  — never as large fills): `splash-red #F0483E`, `splash-blue #3A86C8`,
+  `splash-yellow #F6BE3B`
+- Page background carries a subtle halftone dot grid (`radial-gradient`,
+  no image asset) for the paper/print-comic texture.
 
 **Typography**
-- Headings: `Space Grotesk` (slightly technical/geometric)
-- Body: `IBM Plex Sans`
-- Labels/tags/dates/meta: `IBM Plex Mono` — monospace is used deliberately as
-  a recurring "technical" signal throughout (section labels, tag pills, dates).
+- Display/headings: `Permanent Marker` — big, bold, comic marker lettering
+- Hand accents (subheads, role labels, footer line): `Caveat` — handwritten
+- Body copy: `Inter` — kept clean/readable despite the playful chrome, since
+  recruiters still need to scan real content fast
+- Meta/dates/tags: `Space Mono`
 
-**Motion**
-- Restrained, purposeful animation only: fade/slide-up on hero load, panel
-  reveal on scroll (to be added via a small IntersectionObserver script — not
-  yet wired up as of initial scaffold).
-- All custom animations must respect `prefers-reduced-motion` (see
-  `global.css` — already handled globally, don't bypass it per-component).
-- No parallax, no heavy WebGL/canvas work — keep it lightweight per the
-  "lightning-fast" requirement even while adding animation and color.
+**The comic panel system (this is the core visual language — reuse it,
+don't invent new card styles):**
+- `.panel` (`global.css`) — paper card, 3px ink border, hard offset shadow
+  (`shadow-comic`, no blur — flat comic-ink shadow), independent slight
+  rotation per position (alternating via `nth-of-type`) for a hand-placed
+  feel. On hover: straightens, lifts, shadow grows. Also mouse-reactive: a
+  site-wide script in `BaseLayout.astro` applies a subtle 3D tilt following
+  the cursor within each `.panel`.
+- `.tag-pill` — sticker badge, ink border, hard shadow, rotates through the
+  three splash colors via `nth-of-type` so a group reads as hand-applied
+  stickers, not a uniform grid.
+- `.comic-btn` — CTA button with a hard shadow that visually "presses in"
+  on `:active` (shadow disappears, button shifts down-right).
+- `.section-label` — rounded sticker tag (yellow, slightly rotated) used
+  as the eyebrow label above every section heading.
+- `.doodle-underline` — hand-drawn wavy SVG stroke under the hero name,
+  animates in (stroke-dashoffset draw-on) when revealed on scroll.
+- Hand-drawn SVG doodles (star burst, scribble arrow) as ornamental
+  accents in the hero — `aria-hidden`, purely decorative.
 
-**Overall vibe:** technical but warm — not a sterile SaaS template, not a
-literal illustrated portfolio. A bit of color and motion, still fast and
-readable, still fintech-credible (i.e. not too playful/startup-y).
+**Motion — the site should feel reactive, not static:**
+- Scroll-reveal on every `.reveal` element (fade + slide + slight scale),
+  staggered per sibling, via the `IntersectionObserver` script in
+  `BaseLayout.astro`.
+- Custom trailing cursor dot (`#cursor-dot`) that lerps toward the pointer
+  each frame and grows/tints over interactive elements — desktop only.
+- Mouse-reactive tilt on every `.panel` (see above).
+- `.comic-btn` / `.tag-pill` hover-lift + press-down `:active` states.
+- All of the above is **gated behind `hover: hover` and `pointer: fine`
+  media queries** (skipped on touch) and **fully disabled under
+  `prefers-reduced-motion: reduce`** (see the guards at the bottom of
+  `global.css` and the top of the mouse-effects script) — reactive chrome
+  must never become the only way to perceive content, and must never run
+  where it'd just drain a phone battery for no visual benefit.
+- No-JS fallback: if the reveal script fails to load, `.reveal` content
+  stays fully visible (CSS rule keyed off a `.js-reveal-ready` class added
+  synchronously in `<head>`) rather than staying hidden forever.
+
+**Overall vibe:** unique, playful, hand-crafted — a comic book/zine feel
+over generic template polish. Still built to be fast (no image assets, no
+animation libraries, no heavy JS — everything above is vanilla CSS +
+~100 lines of plain script) and still readable enough for a fintech
+recruiter to scan the actual content, not just admire the chrome.
 
 ## 4. Content / Data Architecture
 
@@ -90,10 +128,12 @@ readable, still fintech-credible (i.e. not too playful/startup-y).
   defined in `tsconfig.json` — no deep relative `../../..` chains.
 - **Styling:** Tailwind utility classes in markup; shared repeated utility
   combos get promoted to a `@layer components` class in `global.css` (see
-  `.panel`, `.tag-pill`, `.section-label`, `.link-underline`) rather than
-  copy-pasted across files.
-- **Colors:** always reference the semantic Tailwind tokens (`ink-950`,
-  `paper-400`, `accent-teal`, etc.) defined in `tailwind.config.mjs` — never
+  `.panel`, `.tag-pill`, `.comic-btn`, `.section-label`, `.link-underline`,
+  `.doodle-underline`) rather than copy-pasted across files. New card/badge
+  UI should extend the existing comic-panel system (§3), not invent a new
+  visual style.
+- **Colors:** always reference the semantic Tailwind tokens (`paper-50`,
+  `ink-900`, `splash-red`, etc.) defined in `tailwind.config.mjs` — never
   raw hex values in component markup.
 - **Data typing:** any new resume field must be added to the `Resume`
   interface tree in `resume.ts` before use, so TypeScript catches typos.
@@ -188,3 +228,19 @@ readable, still fintech-credible (i.e. not too playful/startup-y).
   bug: the header had no working navigation at all on mobile (`sm:flex`
   with no fallback) — added a hamburger menu. Added `scroll-margin-top` so
   anchor-jump navigation doesn't get hidden under the sticky header.
+- **Complete visual rebuild — "Comic Paper" replaces "Dark Tech Sleek."**
+  User asked for a full UI/UX switch-up: white/black + a splash of color,
+  warm hand-drawn paper aesthetic, comic-panel sections, playful custom
+  illustration accents, mouse-reactive animation throughout. Rewrote
+  `tailwind.config.mjs` (new palette, fonts, `shadow-comic` utilities,
+  keyframes), `global.css` (halftone paper background, `.panel`/`.tag-pill`
+  /`.comic-btn`/`.section-label`/`.doodle-underline` comic system,
+  `#cursor-dot` styles), and every component (`Header`, `Hero`,
+  `Experience`, `SkillsAndEducation`, `Certifications`, `ProjectCard`,
+  `Projects`, `Footer`) to the new system. `BaseLayout.astro` now also
+  drives a trailing cursor dot and per-panel mouse-tilt, both gated behind
+  `hover:hover`+`pointer:fine` and disabled under reduced-motion. New fonts:
+  Permanent Marker / Caveat / Inter / Space Mono (replacing Space Grotesk /
+  IBM Plex Sans / IBM Plex Mono). Favicon updated to match. Verified build
+  (0 errors) and live in-browser on desktop + 375px mobile, including the
+  hover-tilt and mobile nav. See §3 for the full new design-direction spec.

@@ -4,54 +4,74 @@ import { resume } from '@data/resume';
 const { name, headline, location, summary, links } = resume.profile;
 ---
 
-<section id="about" class="mx-auto max-w-5xl px-6 pb-20 pt-24 sm:pt-32">
-  <p class="section-label mb-4 animate-fade-up [animation-delay:0ms]">
+<section id="about" class="relative mx-auto max-w-5xl overflow-hidden px-6 pb-24 pt-28 sm:pt-36">
+  <!-- Decorative hand-drawn doodles — purely ornamental, hidden from a11y tree. -->
+  <svg
+    aria-hidden="true"
+    class="pointer-events-none absolute right-2 top-16 h-16 w-16 text-splash-yellow animate-float sm:right-10 sm:h-24 sm:w-24"
+    viewBox="0 0 100 100"
+    fill="none"
+  >
+    <path
+      d="M50 4 L61 38 L96 38 L68 59 L79 93 L50 72 L21 93 L32 59 L4 38 L39 38 Z"
+      fill="currentColor"
+      stroke="#161311"
+      stroke-width="3"
+      stroke-linejoin="round"
+    />
+  </svg>
+  <svg
+    aria-hidden="true"
+    class="pointer-events-none absolute left-0 top-4 h-20 w-28 text-splash-red animate-wiggle sm:left-[-10px] sm:h-28 sm:w-36"
+    viewBox="0 0 140 100"
+    fill="none"
+  >
+    <path
+      d="M6 70 C 30 20, 70 10, 110 30 C 100 20, 125 15, 133 28 C 128 40, 108 42, 108 42 C 108 42, 118 55, 110 30"
+      stroke="currentColor"
+      stroke-width="5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+
+  <p class="section-label reveal">
     {resume.industry} · {resume.targetRoles.join(' · ')}
   </p>
-  <h1 class="animate-fade-up text-4xl font-semibold leading-tight sm:text-6xl [animation-delay:80ms]">
+
+  <h1 class="reveal mt-6 text-5xl leading-[1.05] sm:text-7xl">
     {name}
   </h1>
-  <h2 class="animate-fade-up mt-3 text-xl text-paper-400 sm:text-2xl [animation-delay:160ms]">
+  <svg class="doodle-underline reveal" viewBox="0 0 400 14" aria-hidden="true">
+    <path d="M4 8 Q 60 2, 120 8 T 240 8 T 360 8 T 396 6" />
+  </svg>
+
+  <h2 class="reveal mt-4 font-hand text-2xl font-bold text-ink-700 sm:text-3xl">
     {headline}
-    {location ? <span class="text-paper-400/60"> · {location}</span> : null}
+    {location ? <span class="text-ink-400"> · {location}</span> : null}
   </h2>
-  <p class="animate-fade-up mt-6 max-w-2xl text-base leading-relaxed text-paper-400 sm:text-lg [animation-delay:240ms]">
+
+  <p class="reveal mt-6 max-w-2xl rounded-2xl border-2 border-dashed border-ink-400 bg-paper-100/60 p-4 text-base leading-relaxed text-ink-700 sm:text-lg">
     {summary}
   </p>
 
-  <div class="animate-fade-up mt-8 flex flex-wrap gap-3 [animation-delay:320ms]">
+  <div class="reveal mt-8 flex flex-wrap gap-3">
     {
       links.linkedin && (
-        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" class="tag-pill hover:border-accent-teal/60 hover:text-accent-teal transition-colors">
+        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" class="comic-btn">
           LinkedIn ↗
         </a>
       )
     }
     {
       links.github && (
-        <a href={links.github} target="_blank" rel="noopener noreferrer" class="tag-pill hover:border-accent-indigo/60 hover:text-accent-indigo transition-colors">
+        <a href={links.github} target="_blank" rel="noopener noreferrer" class="comic-btn">
           GitHub ↗
         </a>
       )
     }
-    <a href={`mailto:${resume.profile.email}`} class="tag-pill hover:border-accent-teal/60 hover:text-accent-teal transition-colors">
+    <a href={`mailto:${resume.profile.email}`} class="comic-btn">
       Email
     </a>
   </div>
 </section>
-
-<style>
-  @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .animate-fade-up {
-    animation: fade-up 0.6s ease-out both;
-  }
-</style>

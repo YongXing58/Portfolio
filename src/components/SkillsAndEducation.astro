@@ -2,15 +2,15 @@
 import { resume } from '@data/resume';
 ---
 
-<section id="skills" class="mx-auto max-w-5xl px-6 py-20">
-  <div class="grid gap-12 sm:grid-cols-2">
+<section id="skills" class="mx-auto max-w-5xl px-6 py-16">
+  <div class="grid gap-14 sm:grid-cols-2">
     <div>
-      <p class="section-label mb-8">Skills</p>
+      <p class="section-label reveal mb-10">Skills</p>
       <div class="space-y-6">
         {
           resume.skills.map((group) => (
             <div class="reveal">
-              <h4 class="mb-2 text-sm font-medium text-paper-100">{group.category}</h4>
+              <h4 class="mb-2 font-hand text-xl font-bold text-ink-900">{group.category}</h4>
               <div class="flex flex-wrap gap-2">
                 {group.items.map((item) => (
                   <span class="tag-pill">{item}</span>
@@ -23,20 +23,23 @@ import { resume } from '@data/resume';
     </div>
 
     <div>
-      <p class="section-label mb-8">Education</p>
+      <p class="section-label reveal mb-10">Education</p>
       <div class="space-y-6">
         {
           resume.education.map((edu) => (
             <div class="panel reveal p-5">
-              <h4 class="text-sm font-semibold text-paper-100 sm:text-base">{edu.institution}</h4>
-              <p class="mt-1 text-sm text-paper-400">{edu.degree}</p>
-              <p class="mt-1 font-mono text-xs text-paper-400">
+              <h4 class="text-lg text-ink-900 sm:text-xl">{edu.institution}</h4>
+              <p class="mt-1 font-hand text-lg font-bold text-ink-700">{edu.degree}</p>
+              <p class="mt-2 font-mono text-xs text-ink-400">
                 {edu.startDate} — {edu.endDate} · {edu.location}
               </p>
               {edu.highlights?.length ? (
-                <ul class="mt-3 space-y-1 text-sm text-paper-400">
+                <ul class="mt-3 space-y-1 text-sm text-ink-700">
                   {edu.highlights.map((h) => (
-                    <li>· {h}</li>
+                    <li class="flex gap-2">
+                      <span class="text-splash-blue">✦</span>
+                      <span>{h}</span>
+                    </li>
                   ))}
                 </ul>
               ) : null}

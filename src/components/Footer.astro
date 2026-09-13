@@ -5,22 +5,22 @@ const year = new Date().getFullYear();
 const { links, email } = resume.profile;
 ---
 
-<footer id="contact" class="mx-auto max-w-5xl px-6 py-20">
-  <div class="panel flex flex-col items-start gap-6 p-8 sm:flex-row sm:items-center sm:justify-between">
+<footer id="contact" class="mx-auto max-w-5xl px-6 py-16">
+  <div class="panel reveal flex flex-col items-start gap-6 p-8 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <p class="section-label mb-2">Contact</p>
-      <h3 class="text-xl font-semibold text-paper-100 sm:text-2xl">Let's talk.</h3>
-      <a href={`mailto:${email}`} class="link-underline mt-2 inline-block text-sm text-paper-400 sm:text-base">
+      <p class="section-label mb-3">Contact</p>
+      <h3 class="text-2xl text-ink-900 sm:text-3xl">Let's talk.</h3>
+      <a href={`mailto:${email}`} class="link-underline mt-2 inline-block text-sm sm:text-base">
         {email}
       </a>
     </div>
-    <div class="flex gap-3 font-mono text-xs">
-      {links.linkedin && <a href={links.linkedin} target="_blank" rel="noopener noreferrer" class="tag-pill hover:border-accent-teal/60 hover:text-accent-teal transition-colors">LinkedIn</a>}
-      {links.github && <a href={links.github} target="_blank" rel="noopener noreferrer" class="tag-pill hover:border-accent-indigo/60 hover:text-accent-indigo transition-colors">GitHub</a>}
+    <div class="flex gap-3">
+      {links.linkedin && <a href={links.linkedin} target="_blank" rel="noopener noreferrer" class="comic-btn">LinkedIn</a>}
+      {links.github && <a href={links.github} target="_blank" rel="noopener noreferrer" class="comic-btn">GitHub</a>}
     </div>
   </div>
 
-  <p class="mt-8 text-center font-mono text-xs text-paper-400/60">
-    © {year} {resume.profile.name}. Built with Astro + Tailwind.
+  <p class="mt-8 text-center font-hand text-lg font-bold text-ink-400">
+    © {year} {resume.profile.name} — built with Astro + Tailwind, a lot of coffee, and a little chaos.
   </p>
 </footer>
