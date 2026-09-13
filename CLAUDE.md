@@ -165,6 +165,18 @@ don't invent new card styles):**
   anything placed nearer the top than that sits under the sticky header.
   On mobile there's no margin to bleed into at all, so these use `hidden
   sm:block` rather than rendering clipped/overlapping on narrow screens.
+- `#running-stickman` (`BaseLayout.astro`) — a stickman that continuously
+  jogs left-to-right across the **entire viewport** on a 13s loop
+  (`position: fixed`, so it runs over whatever section is in view, not
+  tied to one section like the doodles above). Pure CSS, no JS dependency:
+  `animation: run-across` handles the horizontal traverse, and two
+  overlapping leg/arm pose groups (`.frame-a`/`.frame-b`) toggle via
+  opacity on a faster independent loop to fake a running cadence — cheap
+  (opacity only, no transform math on individual limbs) and reliable.
+  `z-40`, `pointer-events: none`, sits below the header (`z-50`) and the
+  cursor mascot/click-burst (`z-998/999`). Explicitly `display: none`
+  under `prefers-reduced-motion` (not just frozen) — a static stickman
+  stuck at a random point on screen would read as a bug, not a choice.
 
 **Motion — the site should feel reactive, not static:**
 - Scroll-reveal on every `.reveal` element (fade + slide + slight scale),
@@ -504,3 +516,18 @@ recruiter to scan the actual content, not just admire the chrome.
   section, progress dots track scroll position, and a clean render on
   375px mobile (with the negative-offset doodles correctly hidden below
   `sm:` where there's no margin to bleed into).
+- **Running stickman.** User asked for a stickman that runs across the
+  screen, distinct from the static waving one in the footer. Added
+  `#running-stickman` — fixed-position, pure CSS (no JS), continuously
+  jogs left-to-right on a 13s loop over whatever section is currently in
+  view, with a genuine two-frame running stride (alternating leg/arm
+  poses via opacity toggle) layered on top of the horizontal traverse
+  rather than just sliding a static pose across. Explicitly hidden (not
+  frozen) under `prefers-reduced-motion`. Verified: 0 build errors,
+  confirmed running and changing stride mid-scroll on desktop (position:
+  fixed keeps it on-screen across section changes); on mobile emulation
+  confirmed via computed styles that `position: fixed` + `bottom: 1.75rem`
+  is resolving correctly against the real (taller) emulated viewport
+  height — the on-screen preview crops to a shorter height than that, so
+  the stickman not appearing in a mobile screenshot was a tool display
+  quirk, not a bug in the page.

@@ -316,6 +316,39 @@ html.custom-cursor-active .panel {
   animation: burst-particle 0.6s ease-out forwards;
 }
 
+/* --- Running stickman: jogs across the screen on a loop --------------- */
+/* Pure CSS (no JS dependency) — runs over whatever section is currently in
+   view. Two alternating leg/arm poses (`.frame-a`/`.frame-b`, toggled by
+   opacity — cheap, no transform math needed) give it a real running
+   cadence layered on top of the slower left-to-right traversal. */
+#running-stickman {
+  position: fixed;
+  left: 0;
+  bottom: 1.75rem;
+  z-index: 40;
+  pointer-events: none;
+  animation: run-across 13s linear infinite;
+}
+#running-stickman .frame-a {
+  animation: stride-a 0.35s steps(1) infinite;
+}
+#running-stickman .frame-b {
+  animation: stride-b 0.35s steps(1) infinite;
+}
+
+@keyframes run-across {
+  from { transform: translateX(-10vw); }
+  to { transform: translateX(110vw); }
+}
+@keyframes stride-a {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes stride-b {
+  0%, 49% { opacity: 0; }
+  50%, 100% { opacity: 1; }
+}
+
 @keyframes tag-shake {
   0%, 100% { transform: rotate(0deg) translateY(-2px); }
   25% { transform: rotate(-8deg) translateY(-2px); }
@@ -354,6 +387,13 @@ html.custom-cursor-active .panel {
   }
 
   #cursor-char {
+    display: none !important;
+  }
+
+  /* Explicitly hidden (not just frozen mid-animation) — a static stickman
+     stuck at a random point on screen would look like a rendering glitch,
+     not a deliberate choice. */
+  #running-stickman {
     display: none !important;
   }
 }

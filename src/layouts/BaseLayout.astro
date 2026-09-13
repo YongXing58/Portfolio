@@ -68,6 +68,33 @@ const {
       </svg>
     </div>
 
+    <!-- A little stickman that jogs across the screen every so often — pure
+         CSS animation (no JS dependency, works even with scripts off).
+         Two alternating leg/arm poses give it an actual running motion
+         rather than just sliding. Fixed position, so it runs over whatever
+         section is currently in view. Hidden entirely under
+         prefers-reduced-motion (see global.css) rather than freezing
+         mid-stride. -->
+    <div id="running-stickman" aria-hidden="true">
+      <svg viewBox="0 0 60 60" width="48" height="48">
+        <circle cx="42" cy="12" r="7" fill="none" stroke="#161311" stroke-width="4" />
+        <g class="stride-frame frame-a">
+          <path d="M38 18 L24 34" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M32 22 L44 14" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M32 22 L20 30" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M24 34 L36 50" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M24 34 L10 44" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+        </g>
+        <g class="stride-frame frame-b">
+          <path d="M38 18 L24 34" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M32 22 L44 30" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M32 22 L20 14" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M24 34 L36 44" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+          <path d="M24 34 L10 50" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+        </g>
+      </svg>
+    </div>
+
     <slot />
 
     <script>
