@@ -26,7 +26,7 @@ export default {
       fontFamily: {
         display: ['"Permanent Marker"', 'cursive'], // big comic headings
         hand: ['"Caveat"', 'cursive'], // handwritten accents/labels
-        body: ['"Inter"', 'sans-serif'], // readable body copy
+        body: ['"Comic Neue"', 'cursive'], // comic-styled but still legible body copy
         mono: ['"Space Mono"', 'monospace'], // dates, meta, tags
       },
       boxShadow: {

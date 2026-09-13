@@ -10,6 +10,10 @@
        `proximity` (not `mandatory`) so a section taller than the viewport
        never traps the scroll — see CLAUDE.md §3. */
     scroll-snap-type: y proximity;
+    /* Decorative background blobs (see .bg-blob) intentionally bleed
+       slightly past the viewport edge — clip that instead of allowing a
+       horizontal scrollbar. */
+    overflow-x: hidden;
   }
 
   /* Offset anchor-jump targets so the sticky header never covers a
@@ -21,11 +25,18 @@
   }
 
   body {
-    @apply bg-paper-50 text-ink-900 font-body antialiased;
-    /* Warm paper: subtle halftone dot grid + faint grain, no image assets. */
+    @apply relative bg-paper-50 text-ink-900 font-body antialiased;
+    /* Warm paper with a classic comic-print "misregistration" halftone:
+       the main ink dot grid plus two faint colored dot layers, each
+       slightly offset — like CMYK plates that don't quite line up. Subtle
+       at this opacity, but it's what keeps the page from reading as flat
+       white. No image assets — all gradients. */
     background-image:
-      radial-gradient(circle, rgba(22, 19, 17, 0.07) 1px, transparent 1.2px);
-    background-size: 16px 16px;
+      radial-gradient(circle, rgba(22, 19, 17, 0.08) 1px, transparent 1.2px),
+      radial-gradient(circle, rgba(240, 72, 62, 0.05) 1px, transparent 1.2px),
+      radial-gradient(circle, rgba(58, 134, 200, 0.05) 1px, transparent 1.2px);
+    background-size: 16px 16px, 16px 16px, 16px 16px;
+    background-position: 0 0, 3px 3px, -3px 3px;
   }
 
   h1,
@@ -41,6 +52,33 @@
 }
 
 @layer components {
+  /* Large soft color wash behind a section, meant to bleed past the
+     max-w-5xl content column into the surrounding paper — this is what
+     breaks up the "full white background" across the page instead of
+     just the halftone grid. Purely decorative: pointer-events-none,
+     negative z-index, aria-hidden on the element using it. The section it
+     sits in needs `relative` for absolute positioning to anchor to it.
+
+     Deliberately a radial-gradient background, NOT a solid fill + CSS
+     `filter: blur()` — a handful of large blurred elements turned out to
+     be expensive enough to composite that they caused visible paint
+     stalls/glitches once scroll-snap and the mouse-tilt transforms were
+     also in play. A gradient with a transparent edge looks just as soft
+     for near-zero cost, which also fits the "lightning-fast" principle
+     in CLAUDE.md §2. */
+  .bg-blob {
+    @apply pointer-events-none absolute -z-10 rounded-full;
+  }
+  .bg-blob-red {
+    background: radial-gradient(circle, rgba(240, 72, 62, 0.28) 0%, rgba(240, 72, 62, 0) 70%);
+  }
+  .bg-blob-blue {
+    background: radial-gradient(circle, rgba(58, 134, 200, 0.28) 0%, rgba(58, 134, 200, 0) 70%);
+  }
+  .bg-blob-yellow {
+    background: radial-gradient(circle, rgba(246, 190, 59, 0.32) 0%, rgba(246, 190, 59, 0) 70%);
+  }
+
   /* One-section-at-a-time page rhythm. Applied to every top-level
      <section>; min-height keeps each one filling the screen on typical
      viewports while still letting taller content flow naturally. */

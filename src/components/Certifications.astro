@@ -8,7 +8,9 @@ if (!resume.certifications.length) {
 
 {
   resume.certifications.length > 0 && (
-    <section id="certifications" class="snap-section section-enter mx-auto max-w-5xl px-6 pb-16" data-anim="drop">
+    <section id="certifications" class="snap-section section-enter relative mx-auto max-w-5xl px-6 pb-16" data-anim="drop">
+      <div class="bg-blob bg-blob-red -right-40 top-1/3 h-80 w-80 sm:h-[26rem] sm:w-[26rem]" aria-hidden="true"></div>
+
       <p class="section-label reveal mb-10">Licenses &amp; Certifications</p>
       <ul class="grid gap-4 sm:grid-cols-2">
         {resume.certifications.map((cert) => (

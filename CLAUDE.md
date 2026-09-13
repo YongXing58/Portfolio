@@ -56,14 +56,26 @@ pop-with-shadow. See "One section at a time," "Custom cursor," and "Click
 - Splash accents (used sparingly — badges, underlines, stars, tag rotation
   — never as large fills): `splash-red #F0483E`, `splash-blue #3A86C8`,
   `splash-yellow #F6BE3B`
-- Page background carries a subtle halftone dot grid (`radial-gradient`,
-  no image asset) for the paper/print-comic texture.
+- Page background carries a "print misregistration" halftone: the main ink
+  dot grid plus two faint colored dot layers (red, blue) each offset by a
+  few px — like CMYK plates slightly out of alignment, a classic comic-
+  print look. All `radial-gradient`, no image asset.
+- Each section also has one large soft radial-gradient color wash
+  (`.bg-blob` + a `.bg-blob-{red,blue,yellow}` modifier) bleeding from a
+  corner past the `max-w-5xl` content column into the page margins — this
+  is what keeps the page from reading as flat white beyond just the
+  halftone grid. See the ⚠️ **known trap** under "One section at a time"
+  below before touching `.bg-blob` — it must stay a plain gradient, never
+  a solid fill + `filter: blur()`.
 
 **Typography**
 - Display/headings: `Permanent Marker` — big, bold, comic marker lettering
 - Hand accents (subheads, role labels, footer line): `Caveat` — handwritten
-- Body copy: `Inter` — kept clean/readable despite the playful chrome, since
-  recruiters still need to scan real content fast
+- Body copy: `Comic Neue` — a redesigned, legible take on Comic Sans;
+  genuinely comic-styled while staying readable at small sizes. (Was
+  `Inter` originally; the user asked to change every body-text font — About
+  summary, Experience, Education, Certifications, Project descriptions —
+  and this replaces it sitewide via the `font-body` token, not per-section.)
 - Meta/dates/tags: `Space Mono`
 
 **The comic panel system (this is the core visual language — reuse it,
@@ -136,6 +148,19 @@ broke the hero label once already; `.snap-section` deliberately has no
 `display` override, and vertical rhythm comes from each section's own
 padding instead. If a section ever needs its content vertically centered,
 center an *inner wrapper div*, not the section element itself.
+
+⚠️ **Known trap:** don't give `.bg-blob` (the per-section background color
+wash, see Palette above) a solid fill + `filter: blur()`, even though
+that's the more obvious way to get a soft glow. A handful of large
+(300–400px) elements with `blur-3xl` turned out to be expensive enough to
+composite — combined with `scroll-snap-type` and the mouse-tilt transforms
+on `.panel` — that it caused real paint stalls/glitches while scrolling
+(content correct in the DOM/a11y tree, but visibly failing to paint on
+screen). `.bg-blob` is a plain `radial-gradient` with a transparent edge
+instead — visually just as soft, effectively free to composite. If a
+future decorative element needs a "glow," reach for a gradient before a
+blur filter, and if you must use `filter: blur()`, test scrolling
+performance with it before committing.
 
 **Custom cursor.** `#cursor-char` in `BaseLayout.astro` is a small
 star-mascot SVG (reuses the hero star's path) that trails the real pointer
@@ -349,3 +374,25 @@ recruiter to scan the actual content, not just admire the chrome.
   the browser on desktop; mobile (375px) confirmed no mascot cursor
   (correctly touch-gated) and natural scroll through the taller
   Skills+Education section.
+- **Body font swap to Comic Neue + per-section background color washes.**
+  User: layout/design is "not too bad" but the flat white background needs
+  work, and wanted the body text font (About, Experience, Education,
+  Certifications, Projects) changed from Inter — done sitewide via the
+  `font-body` token. Added a "print misregistration" second/third halftone
+  layer (faint red/blue dot grids, slightly offset) to the page background,
+  plus one large soft radial-gradient color wash per section (`.bg-blob` +
+  color modifier), bleeding from alternating corners past the content
+  column into the margins.
+  **Fixed a real, fairly serious bug found during verification:** the
+  first version of `.bg-blob` used solid color fills + `filter: blur-3xl`,
+  which was expensive enough to composite (combined with scroll-snap +
+  the panel mouse-tilt) that it caused genuine paint stalls while
+  scrolling — confirmed via `elementFromPoint`/computed-style checks that
+  the DOM was correct while the screen simply failed to paint it, then
+  isolated the cause by toggling `overflow-x` and blob styles live in the
+  page. Replaced with a plain `radial-gradient` (`.bg-blob-{red,blue,
+  yellow}`), which looks equivalently soft at effectively zero compositing
+  cost — also more in line with the "lightning-fast" principle in §2.
+  Documented as a new ⚠️ known trap in §3. Verified: 0 build errors, clean
+  scroll-snap walkthrough through all 6 sections with no paint glitches on
+  desktop, and a clean render on 375px mobile.

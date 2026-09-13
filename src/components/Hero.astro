@@ -6,9 +6,14 @@ const { name, headline, location, summary, links } = resume.profile;
 
 <section
   id="about"
-  class="snap-section section-enter relative mx-auto max-w-5xl overflow-hidden px-6 pb-24 pt-28 sm:pt-36"
+  class="snap-section section-enter relative mx-auto max-w-5xl px-6 pb-24 pt-28 sm:pt-36"
   data-anim="rise"
 >
+  <!-- Soft color wash bleeding into the page margins — breaks up the flat
+       white background; html has overflow-x:hidden as the safety net for
+       this bleed. Purely decorative. -->
+  <div class="bg-blob bg-blob-red -left-40 top-10 h-72 w-72 sm:h-96 sm:w-96" aria-hidden="true"></div>
+
   <!-- Decorative hand-drawn doodles — purely ornamental, hidden from a11y tree. -->
   <svg
     aria-hidden="true"

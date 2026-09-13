@@ -3,7 +3,9 @@ import { resume } from '@data/resume';
 import ProjectCard from './ProjectCard.astro';
 ---
 
-<section id="projects" class="snap-section section-enter mx-auto max-w-5xl px-6 py-16" data-anim="flip">
+<section id="projects" class="snap-section section-enter relative mx-auto max-w-5xl px-6 py-16" data-anim="flip">
+  <div class="bg-blob bg-blob-blue -left-40 top-0 h-80 w-80 sm:h-[26rem] sm:w-[26rem]" aria-hidden="true"></div>
+
   <p class="section-label reveal mb-10">Projects</p>
   <div class="grid gap-8 sm:grid-cols-2">
     {resume.projects.map((project) => <ProjectCard project={project} />)}
