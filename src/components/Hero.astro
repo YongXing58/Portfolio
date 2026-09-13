@@ -1,0 +1,57 @@
+---
+import { resume } from '@data/resume';
+
+const { name, headline, location, summary, links } = resume.profile;
+---
+
+<section id="about" class="mx-auto max-w-5xl px-6 pb-20 pt-24 sm:pt-32">
+  <p class="section-label mb-4 animate-fade-up [animation-delay:0ms]">
+    {resume.industry} · {resume.targetRoles.join(' · ')}
+  </p>
+  <h1 class="animate-fade-up text-4xl font-semibold leading-tight sm:text-6xl [animation-delay:80ms]">
+    {name}
+  </h1>
+  <h2 class="animate-fade-up mt-3 text-xl text-paper-400 sm:text-2xl [animation-delay:160ms]">
+    {headline}
+    {location ? <span class="text-paper-400/60"> · {location}</span> : null}
+  </h2>
+  <p class="animate-fade-up mt-6 max-w-2xl text-base leading-relaxed text-paper-400 sm:text-lg [animation-delay:240ms]">
+    {summary}
+  </p>
+
+  <div class="animate-fade-up mt-8 flex flex-wrap gap-3 [animation-delay:320ms]">
+    {
+      links.linkedin && (
+        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" class="tag-pill hover:border-accent-teal/60 hover:text-accent-teal transition-colors">
+          LinkedIn ↗
+        </a>
+      )
+    }
+    {
+      links.github && (
+        <a href={links.github} target="_blank" rel="noopener noreferrer" class="tag-pill hover:border-accent-indigo/60 hover:text-accent-indigo transition-colors">
+          GitHub ↗
+        </a>
+      )
+    }
+    <a href={`mailto:${resume.profile.email}`} class="tag-pill hover:border-accent-teal/60 hover:text-accent-teal transition-colors">
+      Email
+    </a>
+  </div>
+</section>
+
+<style>
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out both;
+  }
+</style>

@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-ink-950 text-paper-100 font-body antialiased bg-grid-glow bg-no-repeat;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-accent-teal/30 text-paper-100;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply border border-ink-700 bg-ink-900/60 backdrop-blur-sm rounded-2xl;
+  }
+
+  .section-label {
+    @apply font-mono text-xs uppercase tracking-[0.2em] text-accent-teal/80;
+  }
+
+  .tag-pill {
+    @apply inline-flex items-center rounded-full border border-ink-700 bg-ink-800 px-3 py-1 font-mono text-xs text-paper-400;
+  }
+
+  .link-underline {
+    @apply underline decoration-accent-teal/40 decoration-2 underline-offset-4 transition-colors hover:decoration-accent-teal hover:text-accent-teal;
+  }
+}
+
+/* Respect reduced-motion preference for all custom animation utilities. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,42 @@
+---
+import { resume } from '@data/resume';
+---
+
+<section id="experience" class="mx-auto max-w-5xl px-6 py-20">
+  <p class="section-label mb-8">Experience</p>
+
+  <div class="space-y-6">
+    {
+      resume.experience.map((job) => (
+        <article class="panel reveal p-6 sm:p-8">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-lg font-semibold text-paper-100 sm:text-xl">
+              {job.role} <span class="text-paper-400">· {job.company}</span>
+            </h3>
+            <span class="font-mono text-xs text-paper-400">
+              {job.startDate} — {job.endDate}
+            </span>
+          </div>
+          <p class="mt-1 font-mono text-xs text-paper-400">{job.location}</p>
+
+          <ul class="mt-4 space-y-2 text-sm leading-relaxed text-paper-400 sm:text-base">
+            {job.highlights.map((point) => (
+              <li class="flex gap-3">
+                <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-teal/70" />
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+
+          {job.tags?.length ? (
+            <div class="mt-5 flex flex-wrap gap-2">
+              {job.tags.map((tag) => (
+                <span class="tag-pill">{tag}</span>
+              ))}
+            </div>
+          ) : null}
+        </article>
+      ))
+    }
+  </div>
+</section>

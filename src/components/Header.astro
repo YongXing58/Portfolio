@@ -1,0 +1,34 @@
+---
+import { resume } from '@data/resume';
+
+const navItems = [
+  { label: 'About', href: '#about' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Contact', href: '#contact' },
+];
+---
+
+<header class="sticky top-0 z-50 border-b border-ink-700/60 bg-ink-950/80 backdrop-blur">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+    <a href="#top" class="font-heading text-sm font-semibold tracking-wide text-paper-100">
+      {resume.profile.name}
+    </a>
+    <nav class="hidden gap-6 font-mono text-xs uppercase tracking-widest text-paper-400 sm:flex">
+      {
+        navItems.map((item) => (
+          <a href={item.href} class="transition-colors hover:text-accent-teal">
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+    <a
+      href={resume.profile.resumePdf}
+      class="tag-pill hover:border-accent-teal/60 hover:text-accent-teal transition-colors"
+      download
+    >
+      Resume ↓
+    </a>
+  </div>
+</header>

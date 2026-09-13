@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA-style fallback isn't needed for Astro's static multi-page output,
+# but keep 404 handling explicit if/when a custom 404.astro page is added.

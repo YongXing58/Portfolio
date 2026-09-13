@@ -1,0 +1,11 @@
+---
+import { resume } from '@data/resume';
+import ProjectCard from './ProjectCard.astro';
+---
+
+<section id="projects" class="mx-auto max-w-5xl px-6 py-20">
+  <p class="section-label mb-8">Projects</p>
+  <div class="grid gap-6 sm:grid-cols-2">
+    {resume.projects.map((project) => <ProjectCard project={project} />)}
+  </div>
+</section>

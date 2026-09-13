@@ -1,0 +1,106 @@
+{
+  "profile": {
+    "name": "Yong Xing Fu",
+    "headline": "Aspiring Software Engineer — Building Modern Web Apps & FinTech Solutions",
+    "location": "Singapore",
+    "summary": "Applied Computing student at Singapore Institute of Technology specializing in FinTech, with 5+ years studying the fintech industry and a Diploma in Financial Technology from Republic Polytechnic. I build and test software hands-on, with a growing focus on cybersecurity — from UAT and vulnerability remediation to API debugging during my internship at SBS Transit.",
+    "email": "yongxing937@gmail.com",
+    "resumePdf": "/resume.pdf",
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/yongxingfu/",
+      "github": "TODO: https://github.com/yourhandle",
+      "website": "TODO"
+    }
+  },
+  "targetRoles": [
+    "Software Engineer",
+    "Data Analyst",
+    "Business Analyst"
+  ],
+  "industry": "Fintech",
+  "experience": [
+    {
+      "company": "SBS Transit Ltd",
+      "role": "Application Developer (Internship)",
+      "location": "Singapore · On-site",
+      "startDate": "2023-09",
+      "endDate": "2024-02",
+      "highlights": [
+        "Completed User Acceptance Testing (UAT) across 3 different applications",
+        "Analyzed a vendor VAPT (vulnerability assessment & penetration test) report and executed the recommended remediations",
+        "Completed documentation for web projects and applications",
+        "Assisted with API code for formula retrieval and debugged web functions",
+        "Assisted in cybersecurity implementation for a new webpage"
+      ],
+      "tags": ["UAT", "Cybersecurity", "API Debugging", "Documentation"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Singapore Institute of Technology",
+      "degree": "B.Sc (Honours), Applied Computing — Specialization in FinTech",
+      "location": "Singapore",
+      "startDate": "2026-08",
+      "endDate": "2029-07",
+      "highlights": ["Microsoft Excel, Python and related coursework"]
+    },
+    {
+      "institution": "Republic Polytechnic",
+      "degree": "Diploma in Financial Technology, School of InfoComm",
+      "location": "Singapore",
+      "startDate": "2021",
+      "endDate": "2024",
+      "highlights": ["Microsoft Excel, Object-Oriented Languages and related coursework"]
+    }
+  ],
+  "skills": [
+    {
+      "category": "Languages",
+      "items": ["Python", "Java", "Object-Oriented Programming"]
+    },
+    {
+      "category": "Data & Analytics",
+      "items": ["IT Business Analysis", "User Acceptance Testing", "Microsoft Excel"]
+    },
+    {
+      "category": "Tools & Platforms",
+      "items": ["Web Development", "Canva", "UI Prototyping"]
+    },
+    {
+      "category": "Domain",
+      "items": ["FinTech", "Blockchain", "Cybersecurity"]
+    }
+  ],
+  "projects": [
+    {
+      "slug": "tuition-centre-scheduler",
+      "title": "Tuition Centre Registration & Scheduling System",
+      "summary": "Final Year Project built for a real tuition centre client — automates class registration, teacher assignment, and conflict-free scheduling, plus payments and per-class promotions.",
+      "description": "Developed as a Final Year Project for an actual tuition centre client, replacing their manual, spreadsheet-driven scheduling process. Handles end-to-end registration and booking flow: students book classes, the system auto-assigns and schedules teachers while detecting and preventing timetable conflicts across rooms/teachers/students, processes payments for bookings, and includes a promotions section to advertise each class. Covers the full lifecycle from browsing available classes to confirmed, paid, conflict-free enrollment.",
+      "role": "Project Leader & Main Developer",
+      "date": "6 months",
+      "tags": ["Final Year Project", "Real Client", "Scheduling", "Conflict Detection", "Payments", "Full-Stack"],
+      "links": {},
+      "featured": true
+    },
+    {
+      "slug": "blockchain-marketplace",
+      "title": "Blockchain-Based Marketplace",
+      "summary": "A final-year exam project — a Web3 marketplace where users connect MetaMask, sign in with their wallet, and list or buy products using ETH.",
+      "description": "An e-commerce marketplace built on blockchain for a final-year exam. Users authenticate via MetaMask wallet sign-in before they can post a product for sale or buy one. Listings can be added or removed, and every transaction — uploading a product or purchasing one — is settled in ETH, with the resulting blockchain transaction ID and user ID displayed for full transparency and traceability.",
+      "role": "Solo Developer",
+      "date": "2022",
+      "tags": ["Blockchain", "MetaMask", "Ethereum", "Web3", "Smart Contracts", "Solo Project"],
+      "links": {},
+      "featured": true
+    }
+  ],
+  "certifications": [
+    "Canva: Web and Digital Design Projects — LinkedIn Learning (Nov 2022)",
+    "UX Foundations: Prototyping — LinkedIn Learning (Nov 2022)",
+    "Java SE 7 Programmer II — Republic Polytechnic (Oct 2022)",
+    "Blockchain: Beyond the Basics — LinkedIn Learning (Jul 2022)",
+    "How Blockchains Will Change Business — LinkedIn Learning (Jul 2022)",
+    "Blockchain Basics — LinkedIn Learning (Jul 2022)"
+  ]
+}
