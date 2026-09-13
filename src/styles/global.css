@@ -25,7 +25,13 @@
   }
 
   body {
-    @apply relative bg-paper-50 text-ink-900 font-body antialiased;
+    @apply relative bg-paper-50 text-ink-900 font-body font-medium antialiased;
+    /* Caveat is a cursive/handwritten face, which reads noticeably smaller
+       and tighter than a normal sans body font at the same px size — bump
+       the baseline line-height so paragraphs of it stay comfortable to
+       read, and default to medium weight (regular 400 looks too thin in
+       this face) reserving bold for things that should visibly stand out. */
+    line-height: 1.65;
     /* Warm paper with a classic comic-print "misregistration" halftone:
        the main ink dot grid plus two faint colored dot layers, each
        slightly offset — like CMYK plates that don't quite line up. Subtle
@@ -100,24 +106,64 @@
     @apply relative rounded-[1.75rem] border-[3px] border-ink-900 bg-paper-100 shadow-comic transition-transform duration-200 ease-out;
   }
 
+  /* Four rotation buckets instead of a simple odd/even alternation — reads
+     less mechanical, more like cards actually dropped onto a page one at
+     a time. Hover always straightens to 0deg regardless of bucket. */
+  .panel:nth-of-type(4n + 1) { transform: rotate(-1.1deg); }
+  .panel:nth-of-type(4n + 2) { transform: rotate(0.9deg); }
+  .panel:nth-of-type(4n + 3) { transform: rotate(-0.4deg); }
+  .panel:nth-of-type(4n + 4) { transform: rotate(1.3deg); }
   .panel:hover {
-    @apply -translate-x-0.5 -translate-y-1 scale-[1.015] shadow-comic-lg;
-  }
-
-  .panel:nth-of-type(odd) {
-    transform: rotate(-0.6deg);
-  }
-  .panel:nth-of-type(even) {
-    transform: rotate(0.6deg);
-  }
-  .panel:nth-of-type(odd):hover,
-  .panel:nth-of-type(even):hover {
+    @apply shadow-comic-lg;
     transform: rotate(0deg) translate(-2px, -4px) scale(1.015);
   }
 
   .section-label {
     @apply inline-block rounded-full border-2 border-ink-900 bg-splash-yellow px-4 py-1 font-hand text-lg font-bold text-ink-900 shadow-comic-sm animate-sway;
     transform-origin: 50% 100%;
+  }
+
+  /* Small "chapter N / 6" badge sitting next to a .section-label, and a
+     one-line comic narration caption above it — both purely decorative
+     copy, reinforcing the "one page at a time" reading rhythm. */
+  .chapter-badge {
+    @apply inline-flex h-7 items-center rounded-full border-2 border-ink-900 bg-paper-50 px-2.5 font-mono text-[0.65rem] font-bold tracking-wider text-ink-400;
+  }
+  .narration-caption {
+    @apply mb-2 block font-hand text-xl italic text-splash-blue/80;
+  }
+
+  /* Washi-tape corner accent — opt-in (`.panel-tape`, alongside `.panel`)
+     for larger cards; skipped on small list rows like certifications
+     where it would look cluttered. Alternates side/color via
+     nth-of-type so a run of cards doesn't look copy-pasted. */
+  .panel-tape::before {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: 28px;
+    width: 60px;
+    height: 24px;
+    background: rgba(246, 190, 59, 0.6);
+    border: 2px solid rgba(22, 19, 17, 0.18);
+    transform: rotate(-5deg);
+    pointer-events: none;
+  }
+  .panel-tape:nth-of-type(even)::before {
+    left: auto;
+    right: 28px;
+    background: rgba(58, 134, 200, 0.5);
+    transform: rotate(5deg);
+  }
+
+  /* Scroll-progress dots in the header — one per top-level section, filled
+     in as the matching section becomes the most visible one (see the
+     IntersectionObserver in BaseLayout.astro). */
+  .progress-dot {
+    @apply block h-2.5 w-2.5 rounded-full border-2 border-ink-900 bg-paper-50 transition-all duration-200;
+  }
+  .progress-dot.is-active {
+    @apply w-6 bg-splash-yellow;
   }
 
   /* A twinkling accent star used as a list-bullet stand-in throughout. */
@@ -300,8 +346,10 @@ html.custom-cursor-active .panel {
     transform: none !important;
   }
 
-  .panel:nth-of-type(odd),
-  .panel:nth-of-type(even) {
+  .panel:nth-of-type(4n + 1),
+  .panel:nth-of-type(4n + 2),
+  .panel:nth-of-type(4n + 3),
+  .panel:nth-of-type(4n + 4) {
     transform: none !important;
   }
 

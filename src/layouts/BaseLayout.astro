@@ -22,12 +22,15 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
 
-    <!-- Google Fonts: Permanent Marker (display) + Caveat (hand accents)
-         + Comic Neue (body) + Space Mono (meta/dates/tags) -->
+    <!-- Google Fonts: Permanent Marker (display headings) + Caveat (body
+         AND hand accents — same family everywhere except headings/meta,
+         per the user's "too many fonts" feedback) + Space Mono
+         (meta/dates/tags). Full Caveat weight range loaded since body text
+         now leans on weight, not a second typeface, to create hierarchy. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@500;700&family=Comic+Neue:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
 
@@ -89,6 +92,33 @@ const {
         document.querySelectorAll('.reveal, .section-enter').forEach((el) => observer.observe(el));
       } else {
         document.querySelectorAll('.reveal, .section-enter').forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
+
+    <script>
+      // Scroll-progress dots in the header: mark whichever top-level
+      // section/footer is currently most visible as `.is-active` on the
+      // matching `.progress-dot[data-target]`. Independent of the mouse-
+      // effects gate below — this is plain scroll tracking, useful on
+      // touch too, not a mouse-only flourish.
+      if ('IntersectionObserver' in window) {
+        const dots = document.querySelectorAll<HTMLElement>('.progress-dot');
+        if (dots.length) {
+          const dotObserver = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                const id = entry.target.id;
+                const dot = document.querySelector(`.progress-dot[data-target="${id}"]`);
+                if (dot && entry.isIntersecting) {
+                  dots.forEach((d) => d.classList.remove('is-active'));
+                  dot.classList.add('is-active');
+                }
+              }
+            },
+            { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+          );
+          document.querySelectorAll('.snap-section, footer[id]').forEach((el) => dotObserver.observe(el));
+        }
       }
     </script>
 

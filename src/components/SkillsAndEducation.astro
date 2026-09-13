@@ -5,9 +5,28 @@ import { resume } from '@data/resume';
 <section id="skills" class="snap-section section-enter relative mx-auto max-w-5xl px-6 py-16" data-anim="slide-right">
   <div class="bg-blob bg-blob-yellow -left-40 bottom-0 h-80 w-80 sm:h-[26rem] sm:w-[26rem]" aria-hidden="true"></div>
 
+  <!-- Hand-drawn lightbulb doodle — "the toolkit" — gently swaying. -->
+  <svg
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-6 top-28 hidden h-20 w-20 text-splash-yellow animate-wiggle sm:-right-8 sm:top-32 sm:block"
+    viewBox="0 0 100 100"
+    fill="none"
+  >
+    <circle cx="50" cy="40" r="26" stroke="currentColor" stroke-width="4" />
+    <path d="M40 64 L60 64 L60 76 Q60 82 50 82 Q40 82 40 76 Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round" />
+    <path d="M44 76 L56 76" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+    <path d="M50 8 L50 16 M18 40 L26 40 M74 40 L82 40" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+  </svg>
+
+  <span class="narration-caption reveal">The toolkit...</span>
+  <div class="reveal mb-10 flex flex-wrap items-center gap-3">
+    <p class="section-label">Skills &amp; Education</p>
+    <span class="chapter-badge">CH. 03 / 06</span>
+  </div>
+
   <div class="grid gap-14 sm:grid-cols-2">
     <div>
-      <p class="section-label reveal mb-10">Skills</p>
+      <p class="mb-6 font-hand text-xl font-bold text-ink-900">Skills</p>
       <div class="space-y-6">
         {
           resume.skills.map((group) => (
@@ -25,18 +44,18 @@ import { resume } from '@data/resume';
     </div>
 
     <div>
-      <p class="section-label reveal mb-10">Education</p>
+      <p class="mb-6 font-hand text-xl font-bold text-ink-900">Education</p>
       <div class="space-y-6">
         {
           resume.education.map((edu) => (
-            <div class="panel reveal p-5">
+            <div class="panel panel-tape reveal p-5">
               <h4 class="text-lg text-ink-900 sm:text-xl">{edu.institution}</h4>
               <p class="mt-1 font-hand text-lg font-bold text-ink-700">{edu.degree}</p>
               <p class="mt-2 font-mono text-xs text-ink-400">
                 {edu.startDate} — {edu.endDate} · {edu.location}
               </p>
               {edu.highlights?.length ? (
-                <ul class="mt-3 space-y-1 text-sm text-ink-700">
+                <ul class="mt-3 space-y-1 text-base text-ink-700">
                   {edu.highlights.map((h) => (
                     <li class="flex gap-2">
                       <span class="bullet-star text-splash-blue">✦</span>

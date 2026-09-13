@@ -44,9 +44,24 @@ const { name, headline, location, summary, links } = resume.profile;
     />
   </svg>
 
-  <p class="section-label reveal">
-    {resume.industry} · {resume.targetRoles.join(' · ')}
-  </p>
+  <!-- Hand-drawn finance doodle — a coin/dollar sign, "float"-animated. -->
+  <svg
+    aria-hidden="true"
+    class="pointer-events-none absolute bottom-6 right-4 h-14 w-14 text-splash-blue animate-float sm:bottom-10 sm:right-16 sm:h-20 sm:w-20"
+    viewBox="0 0 100 100"
+    fill="none"
+  >
+    <circle cx="50" cy="50" r="34" stroke="currentColor" stroke-width="4" />
+    <text x="50" y="65" font-family="'Permanent Marker', cursive" font-size="42" text-anchor="middle" fill="currentColor">$</text>
+  </svg>
+
+  <span class="narration-caption reveal">Our story begins...</span>
+  <div class="reveal flex flex-wrap items-center gap-3">
+    <p class="section-label">
+      {resume.industry} · {resume.targetRoles.join(' · ')}
+    </p>
+    <span class="chapter-badge">CH. 01 / 06</span>
+  </div>
 
   <h1 class="reveal mt-6 text-5xl leading-[1.05] sm:text-7xl">
     {name}

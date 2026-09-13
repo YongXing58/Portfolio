@@ -6,7 +6,22 @@ import ProjectCard from './ProjectCard.astro';
 <section id="projects" class="snap-section section-enter relative mx-auto max-w-5xl px-6 py-16" data-anim="flip">
   <div class="bg-blob bg-blob-blue -left-40 top-0 h-80 w-80 sm:h-[26rem] sm:w-[26rem]" aria-hidden="true"></div>
 
-  <p class="section-label reveal mb-10">Projects</p>
+  <!-- Hand-drawn code-bracket doodle — software engineering, wiggling. -->
+  <svg
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-4 top-28 hidden h-20 w-24 text-splash-blue animate-wiggle sm:-right-6 sm:top-32 sm:block"
+    viewBox="0 0 120 80"
+    fill="none"
+  >
+    <text x="60" y="58" font-family="'Permanent Marker', cursive" font-size="44" text-anchor="middle" fill="currentColor">&lt;/&gt;</text>
+  </svg>
+
+  <span class="narration-caption reveal">The good stuff...</span>
+  <div class="reveal mb-10 flex flex-wrap items-center gap-3">
+    <p class="section-label">Projects</p>
+    <span class="chapter-badge">CH. 05 / 06</span>
+  </div>
+
   <div class="grid gap-8 sm:grid-cols-2">
     {resume.projects.map((project) => <ProjectCard project={project} />)}
   </div>

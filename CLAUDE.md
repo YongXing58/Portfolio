@@ -69,34 +69,102 @@ pop-with-shadow. See "One section at a time," "Custom cursor," and "Click
   a solid fill + `filter: blur()`.
 
 **Typography**
-- Display/headings: `Permanent Marker` — big, bold, comic marker lettering
-- Hand accents (subheads, role labels, footer line): `Caveat` — handwritten
-- Body copy: `Comic Neue` — a redesigned, legible take on Comic Sans;
-  genuinely comic-styled while staying readable at small sizes. (Was
-  `Inter` originally; the user asked to change every body-text font — About
-  summary, Experience, Education, Certifications, Project descriptions —
-  and this replaces it sitewide via the `font-body` token, not per-section.)
-- Meta/dates/tags: `Space Mono`
+- Display/headings: `Permanent Marker` — big, bold, comic marker lettering.
+  The one deliberately different display face; keep it that way.
+- Body copy AND hand accents: `Caveat` — **the same family**, on purpose.
+  `font-body` and `font-hand` are two Tailwind tokens that both resolve to
+  Caveat (see `tailwind.config.mjs`) — kept as two token names for
+  semantic clarity in markup, not two typefaces. History: started as
+  `Inter` (v2), briefly became `Comic Neue` (v2.2) when the user asked for
+  every body-text font to change, then became Caveat (v2.3) when the user
+  said that was "too many different fonts" and asked body copy to match
+  the Hero subhead's font instead. **Don't reintroduce a third body
+  typeface** without checking with the user — this has already flip-
+  flopped twice.
+- Meta/dates/tags: `Space Mono` — the other deliberately different face,
+  used only for small functional labels (dates, tags, chapter badges).
+- Because Caveat is cursive, hierarchy inside a block of body text comes
+  from **size and weight, not font family** — see "Type hierarchy inside
+  a card" below. `body` defaults to `font-medium` (500) with
+  `line-height: 1.65`; regular 400 reads too thin in this face at normal
+  sizes.
+
+**Type hierarchy inside a card (why this matters — read before adding
+body text anywhere):** once body copy and accent copy are the same
+cursive font, two lines of different *semantic* weight can look
+*visually* identical unless you deliberately separate them by size/weight.
+This is exactly what went wrong in `ProjectCard.astro` before the fix: the
+one-line `summary` and the longer `description` were both small and the
+same weight, so a recruiter skimming a project card couldn't tell them
+apart. Fixed pattern (reuse this ratio on any new body text that needs a
+"headline + detail" relationship, not just projects):
+- Headline/summary line: `font-hand text-xl font-bold text-ink-900
+  sm:text-2xl`
+- Supporting/detail paragraph: `text-base font-medium text-ink-700/90
+  sm:text-lg`
+That's roughly one full Tailwind size step apart, plus bold vs. medium,
+plus full-ink vs. muted-ink color — three signals stacked, not just one,
+so it survives even if someone later tweaks a single property.
 
 **The comic panel system (this is the core visual language — reuse it,
 don't invent new card styles):**
 - `.panel` (`global.css`) — paper card, 3px ink border, hard offset shadow
-  (`shadow-comic`, no blur — flat comic-ink shadow), independent slight
-  rotation per position (alternating via `nth-of-type`) for a hand-placed
-  feel. On hover: straightens, lifts, shadow grows. Also mouse-reactive: a
+  (`shadow-comic`, no blur — flat comic-ink shadow), independent rotation
+  per position across **four** `nth-of-type` buckets (not just odd/even —
+  reads less mechanical) for a hand-placed feel. On hover: straightens,
+  lifts, scales up slightly, shadow grows. Also mouse-reactive: a
   site-wide script in `BaseLayout.astro` applies a subtle 3D tilt following
   the cursor within each `.panel`.
+- `.panel-tape` — opt-in modifier alongside `.panel` (`::before` pseudo-
+  element) that adds a washi-tape corner accent, alternating side/color
+  via `nth-of-type`. Used on larger cards (Experience, Education,
+  ProjectCard, the Footer contact panel) but deliberately **not** on the
+  small Certifications list rows, where it would look cluttered — treat
+  that as the dividing line for future cards: one-per-row hero content
+  gets tape, dense list rows don't.
 - `.tag-pill` — sticker badge, ink border, hard shadow, rotates through the
   three splash colors via `nth-of-type` so a group reads as hand-applied
   stickers, not a uniform grid.
 - `.comic-btn` — CTA button with a hard shadow that visually "presses in"
   on `:active` (shadow disappears, button shifts down-right).
-- `.section-label` — rounded sticker tag (yellow, slightly rotated) used
-  as the eyebrow label above every section heading.
+- `.section-label` — rounded sticker tag (yellow, continuously swaying) used
+  as the eyebrow label above every section heading, always paired with:
+  - `.chapter-badge` — small "CH. 0N / 06" pill next to the label. Numbers
+    are hardcoded per section (Hero=01 … Footer=06) rather than computed,
+    because Certifications can self-omit if `resume.certifications` is
+    ever empty — if that happens the numbering will be slightly off by
+    one for Projects/Contact. Acceptable known limitation; not worth the
+    complexity of making it dynamic for a portfolio only one person edits.
+  - `.narration-caption` — one italic hand-written line above the label
+    ("Our story begins...", "Meanwhile, on the job...", etc.) — comic-
+    style narration captions, purely decorative copy, one per section.
+- `.progress-dot` — scroll-progress indicator dots in the header
+  (`lg:` screens only), one per rendered top-level section. Lit via a
+  dedicated `IntersectionObserver` in `BaseLayout.astro` (rootMargin
+  `-45% 0 -45% 0`, so whichever section crosses the vertical center of the
+  viewport is marked active) — independent of the mouse-effects gate,
+  since this is plain scroll tracking useful on touch too.
 - `.doodle-underline` — hand-drawn wavy SVG stroke under the hero name,
   animates in (stroke-dashoffset draw-on) when revealed on scroll.
-- Hand-drawn SVG doodles (star burst, scribble arrow) as ornamental
-  accents in the hero — `aria-hidden`, purely decorative.
+- Hand-drawn animated SVG doodles, one or two per section, each finance/
+  tech themed and tied to that section's content: star + scribble arrow +
+  dollar coin (Hero), growth chart (Experience), lightbulb (Skills),
+  padlock (Certifications), code brackets `</>` (Projects), waving
+  stickman (Contact/Footer). All `aria-hidden`, `pointer-events-none`,
+  animated with the existing `animate-float`/`animate-wiggle` utilities.
+
+  ⚠️ **Known trap:** position these doodles so they bleed *outside* the
+  section's content column (negative offset, e.g. `-left-6`/`-right-6`,
+  same technique as `.bg-blob`), not with a small positive inset like
+  `right-4`. A positive inset sits *inside* the column, where it silently
+  renders behind whatever panel/grid is at that position (panels come
+  later in DOM order and are opaque) — this shipped once already on four
+  different doodles and looked like they were simply missing. Also keep
+  them below roughly `top-24`/`top-28`: because `scroll-snap-align: start`
+  puts a section's top edge exactly at the viewport top when snapped to,
+  anything placed nearer the top than that sits under the sticky header.
+  On mobile there's no margin to bleed into at all, so these use `hidden
+  sm:block` rather than rendering clipped/overlapping on narrow screens.
 
 **Motion — the site should feel reactive, not static:**
 - Scroll-reveal on every `.reveal` element (fade + slide + slight scale),
@@ -396,3 +464,43 @@ recruiter to scan the actual content, not just admire the chrome.
   Documented as a new ⚠️ known trap in §3. Verified: 0 build errors, clean
   scroll-snap walkthrough through all 6 sections with no paint glitches on
   desktop, and a clean render on 375px mobile.
+- **Built out all 5 previously-suggested ideas, plus body font unified to
+  Caveat, plus hand-drawn animated doodles.** User approved every earlier
+  suggestion ("chapter numbers," tape/torn-corner accents, narration
+  captions, scroll-progress dots, more varied panel rotation) and asked
+  for two more things: (1) stop using a 4th typeface for body copy — match
+  the Hero subhead's font instead (Caveat replaces the short-lived Comic
+  Neue; see the new Typography section above for the full history/
+  rationale and the mandatory size/weight hierarchy rule that comes with
+  putting body+accent text in the same cursive face); (2) hand-drawn,
+  *animated* finance/tech doodles and a "characters/stickman" scattered
+  around the page so it doesn't feel dead. Implemented:
+  - `.chapter-badge` + `.narration-caption` on every section
+  - `.progress-dot` scroll-tracker in the header (`lg:` only), wired to a
+    dedicated `IntersectionObserver`
+  - `.panel-tape` washi-tape corners on Experience/Education/Project/
+    Footer cards (not Certifications' compact rows)
+  - Four-bucket panel rotation instead of odd/even
+  - Six new animated SVG doodles, one/two per section, each tied
+    thematically to that section (coin, growth chart, lightbulb, padlock,
+    code brackets, waving stickman)
+  - `ProjectCard.astro`'s summary/description sizing fixed per the new
+    hierarchy rule — this was the user's core complaint ("words under
+    project... look really similar")
+  **Fixed a real bug found during verification, on four separate
+  doodles:** the first pass positioned each new doodle with a small
+  *positive* inset (e.g. `right-4`), which placed it *inside* the
+  section's content column — there it silently rendered behind whichever
+  panel/grid occupied that position (panels come later in DOM order and
+  are opaque), so four of six doodles were invisible or showing only a
+  sliver. Fixed by repositioning all of them to bleed *outside* the
+  column with a negative offset (same technique already used by
+  `.bg-blob`), and pushed their vertical position down enough to clear
+  the sticky header on sections reached via scroll-snap. Documented as a
+  new ⚠️ known trap in §3. Verified: 0 build errors; walked all 6 sections
+  confirming every doodle renders fully and un-occluded, the summary/
+  description hierarchy reads clearly in both project cards, tape corners
+  alternate correctly, chapter badges and captions appear on every
+  section, progress dots track scroll position, and a clean render on
+  375px mobile (with the negative-offset doodles correctly hidden below
+  `sm:` where there's no margin to bleed into).

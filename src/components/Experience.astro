@@ -5,12 +5,29 @@ import { resume } from '@data/resume';
 <section id="experience" class="snap-section section-enter relative mx-auto max-w-5xl px-6 py-16" data-anim="slide-left">
   <div class="bg-blob bg-blob-blue -right-40 top-0 h-80 w-80 sm:h-[26rem] sm:w-[26rem]" aria-hidden="true"></div>
 
-  <p class="section-label reveal mb-10">Experience</p>
+  <!-- Hand-drawn "growth chart" doodle — data/finance themed, gently bobbing. -->
+  <svg
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-2 bottom-10 h-16 w-20 text-splash-blue animate-float sm:right-8 sm:h-24 sm:w-28"
+    viewBox="0 0 120 90"
+    fill="none"
+  >
+    <path d="M6 84 L6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+    <path d="M6 84 L114 84" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+    <path d="M14 60 L42 42 L64 54 L100 14" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M82 14 L100 14 L100 32" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+
+  <span class="narration-caption reveal">Meanwhile, on the job...</span>
+  <div class="reveal mb-10 flex flex-wrap items-center gap-3">
+    <p class="section-label">Experience</p>
+    <span class="chapter-badge">CH. 02 / 06</span>
+  </div>
 
   <div class="space-y-10">
     {
       resume.experience.map((job) => (
-        <article class="panel reveal p-6 sm:p-8">
+        <article class="panel panel-tape reveal p-6 sm:p-8">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
             <h3 class="text-xl text-ink-900 sm:text-2xl">
               {job.role} <span class="font-hand text-lg font-bold text-ink-700">· {job.company}</span>
@@ -21,7 +38,7 @@ import { resume } from '@data/resume';
           </div>
           <p class="mt-1 font-mono text-xs text-ink-400">{job.location}</p>
 
-          <ul class="mt-4 space-y-2 text-sm leading-relaxed text-ink-700 sm:text-base">
+          <ul class="mt-4 space-y-2 text-base leading-relaxed text-ink-700 sm:text-lg">
             {job.highlights.map((point) => (
               <li class="flex gap-3">
                 <span class="bullet-star mt-1.5 text-splash-red">✦</span>

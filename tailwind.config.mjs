@@ -25,8 +25,13 @@ export default {
       },
       fontFamily: {
         display: ['"Permanent Marker"', 'cursive'], // big comic headings
-        hand: ['"Caveat"', 'cursive'], // handwritten accents/labels
-        body: ['"Comic Neue"', 'cursive'], // comic-styled but still legible body copy
+        // `hand` and `body` are deliberately the SAME family (Caveat) —
+        // the user asked for body copy to match the hero subhead font
+        // rather than running a 4th typeface. Two token names stay for
+        // semantic clarity in markup; don't reintroduce a different body
+        // font without re-checking with the user first (see CLAUDE.md §3).
+        hand: ['"Caveat"', 'cursive'],
+        body: ['"Caveat"', 'cursive'],
         mono: ['"Space Mono"', 'monospace'], // dates, meta, tags
       },
       boxShadow: {

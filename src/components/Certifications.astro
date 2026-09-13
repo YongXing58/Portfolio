@@ -11,10 +11,28 @@ if (!resume.certifications.length) {
     <section id="certifications" class="snap-section section-enter relative mx-auto max-w-5xl px-6 pb-16" data-anim="drop">
       <div class="bg-blob bg-blob-red -right-40 top-1/3 h-80 w-80 sm:h-[26rem] sm:w-[26rem]" aria-hidden="true"></div>
 
-      <p class="section-label reveal mb-10">Licenses &amp; Certifications</p>
+      <!-- Hand-drawn padlock doodle — "officially certified" — floating. -->
+      <svg
+        aria-hidden="true"
+        class="pointer-events-none absolute -left-6 top-32 hidden h-20 w-20 text-splash-red animate-float sm:-left-8 sm:top-36 sm:block"
+        viewBox="0 0 100 100"
+        fill="none"
+      >
+        <rect x="26" y="46" width="48" height="40" rx="6" stroke="currentColor" stroke-width="4" />
+        <path d="M36 46 V32 a14 14 0 0 1 28 0 V46" stroke="currentColor" stroke-width="4" fill="none" />
+        <circle cx="50" cy="64" r="4" fill="currentColor" />
+        <path d="M50 68 L50 76" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+      </svg>
+
+      <span class="narration-caption reveal">Officially certified...</span>
+      <div class="reveal mb-10 flex flex-wrap items-center gap-3">
+        <p class="section-label">Licenses &amp; Certifications</p>
+        <span class="chapter-badge">CH. 04 / 06</span>
+      </div>
+
       <ul class="grid gap-4 sm:grid-cols-2">
         {resume.certifications.map((cert) => (
-          <li class="panel reveal flex items-center gap-3 px-5 py-4 text-sm text-ink-700">
+          <li class="panel reveal flex items-center gap-3 px-5 py-4 text-base font-semibold text-ink-700">
             <span class="bullet-star text-lg text-splash-yellow">★</span>
             <span>{cert}</span>
           </li>

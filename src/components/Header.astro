@@ -7,6 +7,17 @@ const navItems = [
   { label: 'Projects', href: '#projects' },
   { label: 'Contact', href: '#contact' },
 ];
+
+// One progress dot per top-level section the page actually renders —
+// Certifications self-omits when there are none, so skip its dot too.
+const progressSections = [
+  { id: 'about', label: 'About' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'skills', label: 'Skills & Education' },
+  ...(resume.certifications.length ? [{ id: 'certifications', label: 'Licenses & Certifications' }] : []),
+  { id: 'projects', label: 'Projects' },
+  { id: 'contact', label: 'Contact' },
+];
 ---
 
 <header class="sticky top-0 z-50 border-b-[3px] border-ink-900 bg-paper-50/95 backdrop-blur">
@@ -29,6 +40,20 @@ const navItems = [
         ))
       }
     </nav>
+
+    <!-- Scroll progress: one dot per section, filled in as you reach it
+         (see the IntersectionObserver in BaseLayout.astro). Large screens
+         only — the header is already busy enough on mobile/tablet. -->
+    <nav aria-label="Section progress" class="hidden items-center gap-1.5 lg:flex">
+      {
+        progressSections.map((s) => (
+          <a href={`#${s.id}`} class="progress-dot" data-target={s.id}>
+            <span class="sr-only">Jump to {s.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+
     <div class="flex items-center gap-3">
       <a href={resume.profile.resumePdf} class="comic-btn hidden sm:inline-flex" download>
         Resume ↓
