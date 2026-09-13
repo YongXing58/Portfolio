@@ -7,7 +7,13 @@ don't let it drift from what the code actually does.
 ## 1. Purpose
 
 A personal portfolio site for **Yong Xing Fu**, targeting **fintech** roles:
-Software Engineer, Data Analyst, Business Analyst. Primary audience is
+Software Engineer, Data Analyst, Business Analyst.
+
+**Live site:** https://yongxingfu.netlify.app — deployed via Netlify,
+auto-deploying from `main` on [github.com/YongXing58/Portfolio](https://github.com/YongXing58/Portfolio).
+Any future change just needs a `git commit` + `git push` to go live.
+
+Primary audience is
 recruiters/hiring managers scanning quickly, so content must be scannable first,
 detailed second (brief format now; more depth added over time).
 
