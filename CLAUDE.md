@@ -177,6 +177,34 @@ don't invent new card styles):**
   cursor mascot/click-burst (`z-998/999`). Explicitly `display: none`
   under `prefers-reduced-motion` (not just frozen) — a static stickman
   stuck at a random point on screen would read as a bug, not a choice.
+- `#ladder-climb` (`BaseLayout.astro`) — a second, distinct stickman that
+  climbs a diagonal ladder up and back down, endlessly, in the right
+  margin outside the `max-w-5xl` content column (`xl:` screens only —
+  `1280px+`, where that margin reliably exists; hidden below that rather
+  than risk overlapping content, same reasoning as the doodle bleed-past-
+  edge trap above). Two parts:
+  - The ladder rails/rungs: plain SVG `<line>` elements, low opacity,
+    drawn once, static.
+  - The climbing figure: a `<g>` **inside that same `<svg>`**, animated
+    with native SMIL (`<animateTransform type="translate" ...>`) rather
+    than a separately CSS-animated sibling element. This is deliberate —
+    putting the figure in the *same viewBox coordinate space* as the
+    rails guarantees it tracks the exact diagonal they're drawn on;
+    tuning two independent animations (one for the ladder's visual line,
+    one for a separately-positioned character in vw/vh units) to agree
+    on the same slope is fragile and was rejected during design for
+    that reason. `values="60,750; 140,45; 60,750"` with `keyTimes="0;
+    0.5; 1"` handles the up-then-down loop in one animation (no separate
+    "climb down" keyframes needed). Limb alternation reuses the running
+    stickman's `stride-a`/`stride-b` opacity-toggle keyframes on nested
+    `.climb-frame-a`/`.climb-frame-b` groups — don't duplicate those
+    keyframes for a third mascot if one gets added later.
+  - SMIL animations are **not** covered by the global
+    `animation-duration` override that handles `prefers-reduced-motion`
+    for everything else — `#ladder-climb` has its own explicit
+    `display: none` rule under that media query for exactly this reason;
+    if you add a third SMIL-animated element, it needs the same explicit
+    rule, the general CSS-animation guard won't catch it.
 
 **Motion — the site should feel reactive, not static:**
 - Scroll-reveal on every `.reveal` element (fade + slide + slight scale),
@@ -196,13 +224,37 @@ don't invent new card styles):**
   `.js-reveal-ready` class added synchronously in `<head>`) rather than
   staying hidden forever.
 
-**One section at a time.** Every top-level `<section>`/`<footer>` carries
-`.snap-section` (`scroll-snap-align: start`, `min-height: 100vh`) and
-`html` sets `scroll-snap-type: y proximity`. `proximity`, not `mandatory`,
-on purpose — a section taller than the viewport (e.g. Skills+Education on
-a narrow phone) never traps the scroll fighting the user; it snaps when
-comfortably close to a boundary and otherwise just flows. Disabled
-entirely under `prefers-reduced-motion`.
+**One section at a time — desktop only.** Every top-level
+`<section>`/`<footer>` carries `.snap-section` (`scroll-snap-align:
+start`, `min-height: 100vh` with a `100dvh` companion for mobile browser-
+chrome-aware height — see below) and `html` sets `scroll-snap-type: y
+proximity`. `proximity`, not `mandatory`, on purpose — a section taller
+than the viewport never traps the scroll fighting the user; it snaps when
+comfortably close to a boundary and otherwise just flows.
+
+⚠️ **Known trap (this one shipped to production once):** `proximity`
+snap sounds gentle enough to also work on touch, but it isn't — CSS
+scroll-snap fighting a touch device's momentum-scroll physics is a
+well-documented mobile issue, and the user hit exactly the symptom it
+causes: "can't scroll midway, it keeps jumping back to the top or bottom
+of a section." The fix is **not** trying to tune snap thresholds — it's
+turning snap off for touch entirely:
+```css
+@media (pointer: coarse), (max-width: 767px) {
+  html { scroll-snap-type: none !important; }
+}
+```
+Both conditions are there on purpose: `pointer: coarse` is the correct
+semantic check, but `hover`/`pointer` media features have been observed
+reporting inconsistently in at least one testing environment this project
+uses, so the width clause is a belt-and-suspenders fallback. **Never
+re-enable scroll-snap for touch/narrow viewports** without re-testing an
+actual mid-scroll stop on a touch-emulated viewport (not just eyeballing
+snapped section boundaries) — the failure mode only shows up when you try
+to stop *between* sections, which is easy to not think to test.
+
+Disabled entirely under `prefers-reduced-motion` too (separately from the
+touch rule above).
 
 Each section also carries `.section-enter` + a `data-anim` attribute for a
 bigger, distinct entrance sweep as it's approached — layered underneath
@@ -531,3 +583,37 @@ recruiter to scan the actual content, not just admire the chrome.
   height — the on-screen preview crops to a shorter height than that, so
   the stickman not appearing in a mobile screenshot was a tool display
   quirk, not a bug in the page.
+- **Fixed a real mobile usability bug: scroll-snap was fighting touch
+  scrolling.** User: on phone, "you can't scroll midway as you keep
+  jumping back to top or bottom section" — the `proximity` scroll-snap
+  from the "one section at a time" feature (added a few turns back) was
+  assumed gentle enough for touch based on its behavior in desktop
+  testing, but proximity snap vs. touch momentum-scroll physics is a
+  known mobile issue and this is exactly its symptom. Fixed by disabling
+  `scroll-snap-type` entirely under `@media (pointer: coarse), (max-width:
+  767px)` — desktop keeps the snap experience, touch/narrow gets plain
+  natural scrolling. Also switched `.snap-section`'s `min-height` to
+  `100dvh` (with the existing `100vh` kept as a fallback), since `vh` not
+  accounting for mobile browser chrome show/hide was likely compounding
+  the "jumpy" feeling even apart from the snap fighting. Documented as a
+  new known trap in §3 — this exact regression must not come back if
+  scroll-snap tuning is revisited later. Verified: `scroll-snap-type`
+  computed as `none` on a touch-emulated viewport and `y` (proximity) on
+  a 1280px desktop viewport; confirmed an actual mid-scroll stop (scrollY
+  landing on an arbitrary value, not a section boundary) holds steady
+  with no snap-back on the touch viewport.
+- **Ladder-climbing stickman.** User asked for a second stickman that
+  climbs a diagonal ladder up and back down, with the ladder itself fixed
+  in the background without interfering with content. Added
+  `#ladder-climb`: static SVG ladder rails/rungs plus a climbing figure
+  animated via native SMIL `<animateTransform>` inside the same `<svg>`
+  (guarantees it tracks the rails' exact diagonal — see the full
+  rationale in the new §3 bullet), alternating-limb climbing gait reusing
+  the running stickman's stride keyframes, positioned in the right margin
+  outside the content column and hidden below `xl:` (1280px) where that
+  margin doesn't reliably exist. Explicitly hidden under
+  `prefers-reduced-motion` via its own rule, since SMIL isn't covered by
+  the CSS `animation-duration` override used for everything else.
+  Verified: 0 build errors; watched the figure track the ladder's exact
+  diagonal from bottom to top on a 1440px viewport with no drift, content
+  fully clear of the ladder/climber at all times, no console errors.

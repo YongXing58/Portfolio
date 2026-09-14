@@ -8,12 +8,30 @@
     /* One section at a time: each `.snap-section` claims a full viewport
        and the page settles onto its top edge as the user scrolls past.
        `proximity` (not `mandatory`) so a section taller than the viewport
-       never traps the scroll — see CLAUDE.md §3. */
+       never traps the scroll — see CLAUDE.md §3.
+
+       Desktop (mouse-wheel) only — see the touch/narrow-viewport override
+       below. CSS scroll-snap fighting a touch device's momentum-scroll
+       physics is a well-known mobile issue: it reads as "can't scroll
+       partway, it keeps snapping back to the top or bottom of a section,"
+       which is exactly what the user reported. Rather than tune snap
+       thresholds and hope, mobile gets plain natural scrolling instead. */
     scroll-snap-type: y proximity;
     /* Decorative background blobs (see .bg-blob) intentionally bleed
        slightly past the viewport edge — clip that instead of allowing a
        horizontal scrollbar. */
     overflow-x: hidden;
+  }
+
+  /* Touch devices and narrow viewports: no scroll-snap. `pointer: coarse`
+     catches touchscreens regardless of width; the width clause is a
+     fallback since `hover`/`pointer` media features have been observed to
+     report inconsistently in at least one testing environment (see
+     CLAUDE.md) — belt and suspenders. */
+  @media (pointer: coarse), (max-width: 767px) {
+    html {
+      scroll-snap-type: none !important;
+    }
   }
 
   /* Offset anchor-jump targets so the sticky header never covers a
@@ -96,6 +114,12 @@
     scroll-snap-align: start;
     scroll-snap-stop: normal;
     min-height: 100vh;
+    /* `dvh` accounts for mobile browser chrome (address bar) showing and
+       hiding as you scroll, which `vh` doesn't — without it, every section
+       resizes slightly as the browser UI collapses, adding to the "jumpy"
+       feeling on phones. Falls back to the `vh` above in browsers that
+       don't support `dvh`. */
+    min-height: 100dvh;
   }
 
   /* Comic panel: paper card, thick ink border, hard offset shadow, a
@@ -349,6 +373,28 @@ html.custom-cursor-active .panel {
   50%, 100% { opacity: 1; }
 }
 
+/* --- Ladder climb: a stickman climbing a diagonal ladder in the margin - */
+/* xl+ screens only — see the long comment in BaseLayout.astro for why.
+   The climb itself (position along the diagonal) is native SMIL on the
+   <g> in the markup; this just positions the container and reuses the
+   running-stickman's stride-a/b opacity-toggle keyframes for the limbs. */
+#ladder-climb {
+  position: fixed;
+  right: 2rem;
+  bottom: 0;
+  width: 8rem;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 1;
+  pointer-events: none;
+}
+#ladder-climb .climb-frame-a {
+  animation: stride-a 0.4s steps(1) infinite;
+}
+#ladder-climb .climb-frame-b {
+  animation: stride-b 0.4s steps(1) infinite;
+}
+
 @keyframes tag-shake {
   0%, 100% { transform: rotate(0deg) translateY(-2px); }
   25% { transform: rotate(-8deg) translateY(-2px); }
@@ -394,6 +440,13 @@ html.custom-cursor-active .panel {
      stuck at a random point on screen would look like a rendering glitch,
      not a deliberate choice. */
   #running-stickman {
+    display: none !important;
+  }
+
+  /* SMIL (<animateTransform>) isn't covered by the `animation-duration`
+     override above, so hide the whole ladder — otherwise it'd keep
+     climbing regardless of this preference. */
+  #ladder-climb {
     display: none !important;
   }
 }
