@@ -68,64 +68,71 @@ const {
       </svg>
     </div>
 
-    <!-- A background diagonal ladder with a stickman climbing up and back
-         down it, endlessly. Positioned in the right margin outside the
-         max-w-5xl content column (xl+ screens only, where that margin
-         reliably exists — see CLAUDE.md), low opacity, pointer-events:none,
-         so it sits behind/beside the actual content rather than over it.
+    <!-- A background diagonal ladder spanning the FULL WIDTH of the screen
+         — bottom-left to top-right — with a stickman climbing up it and
+         back down, endlessly. (Originally a narrow ladder tucked in the
+         right margin; the user wanted it crossing the whole screen on a
+         rising diagonal instead, like the running stickman but climbing
+         a slope rather than staying level.)
+         Rendered at every viewport size. Non-interference comes from
+         paint order/z-index, not hiding: this div sits BEFORE the page's
+         actual content in the DOM and has z-index:0, while `.panel`/other
+         content has no z-index of its own (auto) — per CSS stacking
+         rules, same-"level" elements paint in DOM order, so the
+         later-in-DOM real content paints on top of this wherever they'd
+         overlap. The ladder only shows through in open background space,
+         never over text/panels.
          The climbing figure is a child of the SAME <svg> as the ladder
          rails and animated with native SMIL (<animateTransform>) rather
-         than a separately-CSS-animated sibling element — that guarantees
-         it tracks the exact diagonal the rails are drawn on, instead of
-         two independently-tuned animations drifting out of alignment.
-         Alternating arm/leg pose groups (reusing the same stride-a/b
-         opacity-toggle keyframes as the running stickman) give it a real
-         climbing gait. Hidden under prefers-reduced-motion, same as the
-         other mascots. -->
-    <div id="ladder-climb" class="hidden xl:block" aria-hidden="true">
-      <svg viewBox="0 0 200 800" preserveAspectRatio="none" width="100%" height="100%">
-        <!-- Rails -->
-        <line x1="30" y1="780" x2="110" y2="20" stroke="#161311" stroke-width="6" stroke-linecap="round" opacity="0.3" />
-        <line x1="90" y1="780" x2="170" y2="20" stroke="#161311" stroke-width="6" stroke-linecap="round" opacity="0.3" />
-        <!-- Rungs -->
-        <line x1="36" y1="719" x2="96" y2="719" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="45" y1="636" x2="105" y2="636" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="54" y1="552" x2="114" y2="552" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="63" y1="468" x2="123" y2="468" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="72" y1="385" x2="132" y2="385" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="80" y1="301" x2="140" y2="301" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="89" y1="218" x2="149" y2="218" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="98" y1="134" x2="158" y2="134" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <line x1="107" y1="50" x2="167" y2="50" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.25" />
-        <!-- Climbing stickman — travels bottom-of-ladder to top and back,
-             tracking the rails' diagonal exactly since it shares this
-             viewBox's coordinate space. -->
+         than a separately-CSS-animated sibling element — guarantees it
+         tracks the exact diagonal the rails are drawn on. Alternating
+         arm/leg pose groups (reusing the running stickman's stride-a/b
+         opacity-toggle keyframes) give it a real climbing gait. Hidden
+         under prefers-reduced-motion, same as the other mascots. -->
+    <div id="ladder-climb" aria-hidden="true">
+      <svg viewBox="0 0 1000 600" preserveAspectRatio="none" width="100%" height="100%">
+        <!-- Rails: bottom-left to top-right, full width -->
+        <line x1="40" y1="560" x2="920" y2="40" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.22" />
+        <line x1="100" y1="560" x2="980" y2="40" stroke="#161311" stroke-width="5" stroke-linecap="round" opacity="0.22" />
+        <!-- Rungs, evenly spaced along the diagonal -->
+        <line x1="110" y1="518" x2="170" y2="518" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="207" y1="461" x2="267" y2="461" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="304" y1="404" x2="364" y2="404" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="401" y1="347" x2="461" y2="347" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="498" y1="290" x2="558" y2="290" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="594" y1="232" x2="654" y2="232" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="691" y1="175" x2="751" y2="175" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="788" y1="118" x2="848" y2="118" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <line x1="885" y1="61" x2="945" y2="61" stroke="#161311" stroke-width="4" stroke-linecap="round" opacity="0.18" />
+        <!-- Climbing stickman — travels bottom-left of the ladder to
+             top-right and back, tracking the rails' exact diagonal since
+             it shares this viewBox's coordinate space. -->
         <g>
           <animateTransform
             attributeName="transform"
             type="translate"
-            values="60,750; 140,45; 60,750"
+            values="70,555; 950,45; 70,555"
             keyTimes="0; 0.5; 1"
             calcMode="spline"
             keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
-            dur="13s"
+            dur="18s"
             repeatCount="indefinite"
           />
           <g class="climb-frame-a">
-            <circle cx="0" cy="-10" r="7" fill="none" stroke="#161311" stroke-width="4" />
-            <path d="M0 -3 L0 18" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 0 L14 -14" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 0 L-12 10" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 18 L10 30" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 18 L-10 36" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+            <circle cx="0" cy="-10" r="9" fill="none" stroke="#161311" stroke-width="5" />
+            <path d="M0 -1 L0 22" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 3 L18 -16" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 3 L-15 13" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 22 L13 37" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 22 L-13 44" stroke="#161311" stroke-width="5" stroke-linecap="round" />
           </g>
           <g class="climb-frame-b">
-            <circle cx="0" cy="-10" r="7" fill="none" stroke="#161311" stroke-width="4" />
-            <path d="M0 -3 L0 18" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 0 L12 10" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 0 L-14 -14" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 18 L10 36" stroke="#161311" stroke-width="4" stroke-linecap="round" />
-            <path d="M0 18 L-10 30" stroke="#161311" stroke-width="4" stroke-linecap="round" />
+            <circle cx="0" cy="-10" r="9" fill="none" stroke="#161311" stroke-width="5" />
+            <path d="M0 -1 L0 22" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 3 L15 13" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 3 L-18 -16" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 22 L13 44" stroke="#161311" stroke-width="5" stroke-linecap="round" />
+            <path d="M0 22 L-13 37" stroke="#161311" stroke-width="5" stroke-linecap="round" />
           </g>
         </g>
       </svg>

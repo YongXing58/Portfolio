@@ -373,19 +373,27 @@ html.custom-cursor-active .panel {
   50%, 100% { opacity: 1; }
 }
 
-/* --- Ladder climb: a stickman climbing a diagonal ladder in the margin - */
-/* xl+ screens only — see the long comment in BaseLayout.astro for why.
+/* --- Ladder climb: a stickman climbing a full-width diagonal ladder ---- */
+/* Spans the entire viewport (bottom-left to top-right), at every
+   viewport size. `z-index: -1` is the important part — and it must stay
+   NEGATIVE, not 0. Per the CSS2 stacking/painting order, a positioned
+   element with z-index:0 paints AFTER (i.e. on top of) normal in-flow
+   content, not before it — z-index:0 does not mean "same layer as
+   unpositioned content," despite how that reads. Only a *negative*
+   z-index paints behind normal content. This shipped once at z-index:0
+   and the climbing figure visibly crossed over page text; verify with a
+   negative value if this ever needs touching again.
    The climb itself (position along the diagonal) is native SMIL on the
-   <g> in the markup; this just positions the container and reuses the
-   running-stickman's stride-a/b opacity-toggle keyframes for the limbs. */
+   <g> in the markup; this just positions the full-bleed container and
+   reuses the running-stickman's stride-a/b opacity-toggle keyframes for
+   the limbs. */
 #ladder-climb {
   position: fixed;
-  right: 2rem;
-  bottom: 0;
-  width: 8rem;
+  inset: 0;
+  width: 100vw;
   height: 100vh;
   height: 100dvh;
-  z-index: 1;
+  z-index: -1;
   pointer-events: none;
 }
 #ladder-climb .climb-frame-a {

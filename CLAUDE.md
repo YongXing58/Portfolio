@@ -178,27 +178,54 @@ don't invent new card styles):**
   under `prefers-reduced-motion` (not just frozen) — a static stickman
   stuck at a random point on screen would read as a bug, not a choice.
 - `#ladder-climb` (`BaseLayout.astro`) — a second, distinct stickman that
-  climbs a diagonal ladder up and back down, endlessly, in the right
-  margin outside the `max-w-5xl` content column (`xl:` screens only —
-  `1280px+`, where that margin reliably exists; hidden below that rather
-  than risk overlapping content, same reasoning as the doodle bleed-past-
-  edge trap above). Two parts:
+  climbs a diagonal ladder spanning the **entire viewport**, bottom-left
+  to top-right, up and back down, endlessly, at every viewport size
+  (`position: fixed; inset: 0`). Went through two design iterations
+  worth knowing about before touching this element again:
+  - **v1** was a narrow ladder confined to the right margin outside the
+    `max-w-5xl` column, hidden below `xl:` (1280px) so it would never
+    have room to overlap content. The user couldn't see it at all on a
+    ~576px browser window — that breakpoint was far too conservative for
+    how people actually size their windows.
+  - **v2 (current)** spans the full width instead (per a follow-up
+    request: "climb across the screen... diagonally... increasing in a
+    slope"), and safety from overlapping content comes from **paint
+    order**, not from hiding at small sizes.
+
+  Two parts, both always rendered:
   - The ladder rails/rungs: plain SVG `<line>` elements, low opacity,
-    drawn once, static.
+    drawn once, static, `viewBox="0 0 1000 600"` spanning the full
+    container.
   - The climbing figure: a `<g>` **inside that same `<svg>`**, animated
     with native SMIL (`<animateTransform type="translate" ...>`) rather
-    than a separately CSS-animated sibling element. This is deliberate —
-    putting the figure in the *same viewBox coordinate space* as the
-    rails guarantees it tracks the exact diagonal they're drawn on;
-    tuning two independent animations (one for the ladder's visual line,
-    one for a separately-positioned character in vw/vh units) to agree
-    on the same slope is fragile and was rejected during design for
-    that reason. `values="60,750; 140,45; 60,750"` with `keyTimes="0;
-    0.5; 1"` handles the up-then-down loop in one animation (no separate
-    "climb down" keyframes needed). Limb alternation reuses the running
-    stickman's `stride-a`/`stride-b` opacity-toggle keyframes on nested
+    than a separately CSS-animated sibling element. Deliberate — putting
+    the figure in the *same viewBox coordinate space* as the rails
+    guarantees it tracks the exact diagonal they're drawn on; tuning two
+    independent animations to agree on the same slope is fragile and was
+    rejected during design for that reason. `values="70,555; 950,45;
+    70,555"` with `keyTimes="0; 0.5; 1"` handles the up-then-down loop in
+    one animation. Limb alternation reuses the running stickman's
+    `stride-a`/`stride-b` opacity-toggle keyframes on nested
     `.climb-frame-a`/`.climb-frame-b` groups — don't duplicate those
     keyframes for a third mascot if one gets added later.
+
+  ⚠️ **Known trap (got this backwards once, shipped it, had to fix it):**
+  making a `position: fixed` element sit *behind* normal in-flow content
+  requires a **negative** `z-index` — `z-index: 0` does **not** mean
+  "same layer as unpositioned content." Per the CSS2 stacking/painting
+  order spec, positioned descendants at stack level 0 paint **after**
+  (on top of) non-positioned in-flow content, not alongside it — DOM
+  order between them is irrelevant once one of them is explicitly
+  positioned with a z-index. `#ladder-climb` originally used `z-index:
+  0` reasoning "it's earlier in the DOM and at the same level as
+  auto-z-index panels, so DOM order will make later content paint on
+  top" — that reasoning is wrong, and the visible result was the
+  climbing figure and ladder rails drawing on top of page text. Fixed by
+  using `z-index: -1` (stack level 2 in the painting order, definitively
+  before/behind step 3's in-flow content). If a future "background,
+  fixed, behind content" decorative element is added, start with a
+  negative z-index and verify by scrolling it through a text-heavy
+  section, not by reasoning about DOM order.
   - SMIL animations are **not** covered by the global
     `animation-duration` override that handles `prefers-reduced-motion`
     for everything else — `#ladder-climb` has its own explicit
@@ -617,3 +644,33 @@ recruiter to scan the actual content, not just admire the chrome.
   Verified: 0 build errors; watched the figure track the ladder's exact
   diagonal from bottom to top on a 1440px viewport with no drift, content
   fully clear of the ladder/climber at all times, no console errors.
+- **Ladder redesign — full-width, and a real stacking-order bug fixed.**
+  User feedback in two parts: (1) "I don't see any climbing figure, are
+  you sure it's working" — turned out the `xl:` (1280px) visibility gate
+  from the previous change meant it was `display:none` on the user's own
+  ~576px-wide browser window, confirmed via computed styles on the live
+  Netlify site; (2) a follow-up mid-fix: "actually I was thinking it
+  climb across the screen from left to right diagonally... increasing in
+  a slope form" — wanted the full-screen-diagonal version the running
+  stickman gave them the taste for, not a corner-confined ladder.
+  Redesigned `#ladder-climb` to span the entire viewport bottom-left to
+  top-right (`position: fixed; inset: 0`, `viewBox="0 0 1000 600"`),
+  rendered at every screen size — replacing the previous
+  visibility-by-breakpoint approach with a **paint-order** approach for
+  non-interference instead. That surfaced a real bug: the first attempt
+  used `z-index: 0` reasoning that DOM order (this div placed before the
+  real content) would make later content paint on top at "the same
+  level" — wrong. Per the CSS2 painting-order spec, a positioned
+  descendant at stack level 0 paints *after* (on top of) non-positioned
+  in-flow content regardless of DOM order; only a *negative* z-index
+  paints behind it. The climbing figure was visibly crossing over page
+  text before this was caught. Fixed with `z-index: -1` and documented
+  as a new known trap in §3, including why the "z-index:0 = same layer
+  as unpositioned content" reasoning is a trap worth naming explicitly.
+  Verified: 0 build errors; watched the figure climb the full diagonal
+  on a 576px viewport (matching the user's actual reported width) with
+  the ladder line and climbing figure correctly disappearing behind the
+  hero's dashed summary box, the star doodle, and the Experience panel
+  wherever they overlap, and correctly visible in the open background
+  space around them — confirmed both that it's now visible and that it
+  genuinely doesn't interfere with content, which was the original ask.
