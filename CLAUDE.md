@@ -177,61 +177,22 @@ don't invent new card styles):**
   cursor mascot/click-burst (`z-998/999`). Explicitly `display: none`
   under `prefers-reduced-motion` (not just frozen) — a static stickman
   stuck at a random point on screen would read as a bug, not a choice.
-- `#ladder-climb` (`BaseLayout.astro`) — a second, distinct stickman that
-  climbs a diagonal ladder spanning the **entire viewport**, bottom-left
-  to top-right, up and back down, endlessly, at every viewport size
-  (`position: fixed; inset: 0`). Went through two design iterations
-  worth knowing about before touching this element again:
-  - **v1** was a narrow ladder confined to the right margin outside the
-    `max-w-5xl` column, hidden below `xl:` (1280px) so it would never
-    have room to overlap content. The user couldn't see it at all on a
-    ~576px browser window — that breakpoint was far too conservative for
-    how people actually size their windows.
-  - **v2 (current)** spans the full width instead (per a follow-up
-    request: "climb across the screen... diagonally... increasing in a
-    slope"), and safety from overlapping content comes from **paint
-    order**, not from hiding at small sizes.
-
-  Two parts, both always rendered:
-  - The ladder rails/rungs: plain SVG `<line>` elements, low opacity,
-    drawn once, static, `viewBox="0 0 1000 600"` spanning the full
-    container.
-  - The climbing figure: a `<g>` **inside that same `<svg>`**, animated
-    with native SMIL (`<animateTransform type="translate" ...>`) rather
-    than a separately CSS-animated sibling element. Deliberate — putting
-    the figure in the *same viewBox coordinate space* as the rails
-    guarantees it tracks the exact diagonal they're drawn on; tuning two
-    independent animations to agree on the same slope is fragile and was
-    rejected during design for that reason. `values="70,555; 950,45;
-    70,555"` with `keyTimes="0; 0.5; 1"` handles the up-then-down loop in
-    one animation. Limb alternation reuses the running stickman's
-    `stride-a`/`stride-b` opacity-toggle keyframes on nested
-    `.climb-frame-a`/`.climb-frame-b` groups — don't duplicate those
-    keyframes for a third mascot if one gets added later.
-
-  ⚠️ **Known trap (got this backwards once, shipped it, had to fix it):**
-  making a `position: fixed` element sit *behind* normal in-flow content
-  requires a **negative** `z-index` — `z-index: 0` does **not** mean
-  "same layer as unpositioned content." Per the CSS2 stacking/painting
-  order spec, positioned descendants at stack level 0 paint **after**
-  (on top of) non-positioned in-flow content, not alongside it — DOM
-  order between them is irrelevant once one of them is explicitly
-  positioned with a z-index. `#ladder-climb` originally used `z-index:
-  0` reasoning "it's earlier in the DOM and at the same level as
-  auto-z-index panels, so DOM order will make later content paint on
-  top" — that reasoning is wrong, and the visible result was the
-  climbing figure and ladder rails drawing on top of page text. Fixed by
-  using `z-index: -1` (stack level 2 in the painting order, definitively
-  before/behind step 3's in-flow content). If a future "background,
-  fixed, behind content" decorative element is added, start with a
-  negative z-index and verify by scrolling it through a text-heavy
-  section, not by reasoning about DOM order.
-  - SMIL animations are **not** covered by the global
-    `animation-duration` override that handles `prefers-reduced-motion`
-    for everything else — `#ladder-climb` has its own explicit
-    `display: none` rule under that media query for exactly this reason;
-    if you add a third SMIL-animated element, it needs the same explicit
-    rule, the general CSS-animation guard won't catch it.
+- *(Removed 2026-10-06 at the user's request: a full-width diagonal
+  ladder with a second stickman climbing it, `#ladder-climb`. Only the
+  running stickman above remains — don't re-add a climber without being
+  asked.)* Two lessons from it still apply to any future fixed,
+  background decorative element:
+  - ⚠️ To paint a `position: fixed` element **behind** normal in-flow
+    content you need a **negative** `z-index`. `z-index: 0` does not mean
+    "same layer as unpositioned content" — per the CSS2 painting order,
+    positioned descendants at stack level 0 paint *on top of* in-flow
+    content regardless of DOM order. This shipped once at `0` and the
+    figure drew over page text. Verify by scrolling it through a
+    text-heavy section, not by reasoning about DOM order.
+  - SMIL animations (`<animate>`, `<animateTransform>`) are **not**
+    covered by the global `animation-duration` override for
+    `prefers-reduced-motion`; any SMIL element needs its own explicit
+    `display: none` under that media query.
 
 **Motion — the site should feel reactive, not static:**
 - Scroll-reveal on every `.reveal` element (fade + slide + slight scale),
@@ -434,7 +395,21 @@ recruiter to scan the actual content, not just admire the chrome.
       they provide it, no action needed until then.
 - [ ] `profile.links.github` and `profile.links.website` still `TODO` —
       need the user's actual GitHub handle / personal site (if any).
-- [ ] Add real `resumePdf` file to `public/resume.pdf`.
+- [x] Real resume at `public/resume.pdf` — converted from the user's
+      `Yong_Xing_Fu_Resume.docx` with Word (one page). Both Resume
+      buttons use `download="Yong_Xing_Fu_Resume.pdf"` so it saves with
+      a real name. To update it: re-export the docx to PDF over the same
+      path; no code change needed.
+- [ ] **Site data vs. the PDF resume disagree in places** — the resume
+      is newer. Differences: Republic Poly dates (resume 2020–2023, site
+      2021–2024); SBS Transit end date (Mar 2024 vs Feb 2024) and title
+      ("Software Application Intern" vs "Application Developer
+      (Internship)"); SIT end (Jun 2029 vs Jul 2029); project names/years
+      (resume: "EduLink", 2022; Blockchain Marketplace 2021 vs site 2022);
+      resume lists more skills (JavaScript, SQL, MySQL, Pandas, Power BI,
+      Flask, HTML/CSS, Git) and awards (Director's Roll of Honour, RP
+      Service-Learning Award, Edusave Merit Bursary) not on the site.
+      Waiting on the user to confirm syncing `resume.json` to match.
 - [x] Scroll-reveal wired up — `BaseLayout.astro` sets up an
       IntersectionObserver over all `.reveal` elements (Experience,
       ProjectCard, Skills, Education, Certifications), fading/sliding each
@@ -674,3 +649,12 @@ recruiter to scan the actual content, not just admire the chrome.
   wherever they overlap, and correctly visible in the open background
   space around them — confirmed both that it's now visible and that it
   genuinely doesn't interfere with content, which was the original ask.
+- **Resume PDF added; ladder climber removed.** User supplied
+  `Yong_Xing_Fu_Resume.docx`; converted to `public/resume.pdf` via Word
+  and gave both download buttons a proper filename. User decided to drop
+  the diagonal ladder + climbing stickman (`#ladder-climb` markup, CSS
+  and its reduced-motion rule all deleted) and keep only the running
+  stickman. Flagged that the PDF and `resume.json` disagree on several
+  dates/titles/skills (see Open Items). Verified: 0 build errors;
+  `/resume.pdf` serves 200 `application/pdf` (300,742 bytes); no
+  `#ladder-climb` in the DOM; running stickman still animating.
