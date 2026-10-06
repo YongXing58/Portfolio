@@ -407,11 +407,12 @@ recruiter to scan the actual content, not just admire the chrome.
       tech-stack tags, and a new `awards` field. **Exception: Republic
       Poly stays 2021–2024** — the user confirmed the site is right and
       the PDF (2020–2023) is wrong.
-- [ ] The PDF itself still says Republic Poly 2020–2023 — the user should
-      fix the docx and re-export to `public/resume.pdf`.
-- [ ] Hero summary (`profile.summary`) still mentions "UAT" and "API
-      debugging" at SBS Transit; those are no longer in the experience
-      bullets after the sync. Ask the user before rewording their bio.
+- [x] PDF re-exported after the user fixed Republic Poly to 2021–2024 in
+      the docx — PDF and site now agree.
+- [x] Hero summary reworded (user approved) so its SBS Transit clause
+      matches the experience bullets: securing new websites before launch
+      and reviewing penetration-testing findings, instead of UAT/API
+      debugging.
 - [x] Scroll-reveal wired up — `BaseLayout.astro` sets up an
       IntersectionObserver over all `.reveal` elements (Experience,
       ProjectCard, Skills, Education, Certifications), fading/sliding each
