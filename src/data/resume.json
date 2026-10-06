@@ -20,29 +20,28 @@
   "industry": "Fintech",
   "experience": [
     {
-      "company": "SBS Transit Ltd",
-      "role": "Application Developer (Internship)",
+      "company": "SBS Transit",
+      "role": "Software Application Intern",
       "location": "Singapore · On-site",
       "startDate": "2023-09",
-      "endDate": "2024-02",
+      "endDate": "2024-03",
       "highlights": [
-        "Completed User Acceptance Testing (UAT) across 3 different applications",
-        "Analyzed a vendor VAPT (vulnerability assessment & penetration test) report and executed the recommended remediations",
-        "Completed documentation for web projects and applications",
-        "Assisted with API code for formula retrieval and debugged web functions",
-        "Assisted in cybersecurity implementation for a new webpage"
+        "Implemented cybersecurity measures on new websites and applications before launch",
+        "Reviewed VAPT (vulnerability assessment and penetration testing) findings and proposed remediations",
+        "Debugged application code and identified the correct functions for web configuration",
+        "Wrote technical documentation for completed projects"
       ],
-      "tags": ["UAT", "Cybersecurity", "API Debugging", "Documentation"]
+      "tags": ["Cybersecurity", "VAPT", "Debugging", "Documentation"]
     }
   ],
   "education": [
     {
       "institution": "Singapore Institute of Technology",
-      "degree": "B.Sc (Honours), Applied Computing — Specialization in FinTech",
+      "degree": "Bachelor's Degree in Applied Computing (FinTech Specialisation)",
       "location": "Singapore",
       "startDate": "2026-08",
-      "endDate": "2029-07",
-      "highlights": ["Microsoft Excel, Python and related coursework"]
+      "endDate": "2029-06 (expected)",
+      "highlights": ["Relevant modules: Programming Fundamentals, Database Systems, Financial Technology, Data Analytics"]
     },
     {
       "institution": "Republic Polytechnic",
@@ -55,45 +54,54 @@
   ],
   "skills": [
     {
+      "category": "Programming",
+      "items": ["Python", "Java", "JavaScript"]
+    },
+    {
+      "category": "Data & Databases",
+      "items": ["SQL", "MySQL", "Excel", "Pandas", "Power BI"]
+    },
+    {
+      "category": "Web & Tools",
+      "items": ["HTML/CSS", "Flask", "Git/GitHub", "VS Code"]
+    },
+    {
+      "category": "Blockchain & FinTech",
+      "items": ["Ethereum", "Web3", "MetaMask integration", "Payment processing"]
+    },
+    {
       "category": "Languages",
-      "items": ["Python", "Java", "Object-Oriented Programming"]
-    },
-    {
-      "category": "Data & Analytics",
-      "items": ["IT Business Analysis", "User Acceptance Testing", "Microsoft Excel"]
-    },
-    {
-      "category": "Tools & Platforms",
-      "items": ["Web Development", "Canva", "UI Prototyping"]
-    },
-    {
-      "category": "Domain",
-      "items": ["FinTech", "Blockchain", "Cybersecurity"]
+      "items": ["English", "Mandarin"]
     }
   ],
   "projects": [
     {
-      "slug": "tuition-centre-scheduler",
-      "title": "Tuition Centre Registration & Scheduling System",
+      "slug": "edulink",
+      "title": "EduLink: Tuition Centre Booking & Scheduling System",
       "summary": "Final Year Project built for a real tuition centre client — automates class registration, teacher assignment, and conflict-free scheduling, plus payments and per-class promotions.",
-      "description": "Developed as a Final Year Project for an actual tuition centre client, replacing their manual, spreadsheet-driven scheduling process. Handles end-to-end registration and booking flow: students book classes, the system auto-assigns and schedules teachers while detecting and preventing timetable conflicts across rooms/teachers/students, processes payments for bookings, and includes a promotions section to advertise each class. Covers the full lifecycle from browsing available classes to confirmed, paid, conflict-free enrollment.",
+      "description": "Built a booking and scheduling system for a real tuition centre client, replacing its manual, spreadsheet-based process. Automated class registration and teacher assignment, with conflict detection across rooms, teachers and students. Integrated payment processing for bookings and a promotions page for each class.",
       "role": "Project Leader & Main Developer",
-      "date": "6 months",
-      "tags": ["Final Year Project", "Real Client", "Scheduling", "Conflict Detection", "Payments", "Full-Stack"],
+      "date": "2022 · 6 months",
+      "tags": ["Python", "Flask", "MySQL", "Java", "JavaScript", "Final Year Project", "Real Client"],
       "links": {},
       "featured": true
     },
     {
       "slug": "blockchain-marketplace",
-      "title": "Blockchain-Based Marketplace",
-      "summary": "A final-year exam project — a Web3 marketplace where users connect MetaMask, sign in with their wallet, and list or buy products using ETH.",
-      "description": "An e-commerce marketplace built on blockchain for a final-year exam. Users authenticate via MetaMask wallet sign-in before they can post a product for sale or buy one. Listings can be added or removed, and every transaction — uploading a product or purchasing one — is settled in ETH, with the resulting blockchain transaction ID and user ID displayed for full transparency and traceability.",
+      "title": "Blockchain Marketplace",
+      "summary": "A Web3 marketplace where users sign in with their MetaMask wallet to list, remove and buy products in ETH.",
+      "description": "Built a Web3 marketplace where users sign in with their MetaMask wallet to list, remove and buy products in ETH. Displayed the blockchain transaction ID and user ID for every listing and purchase, for full transparency and traceability.",
       "role": "Solo Developer",
-      "date": "2022",
-      "tags": ["Blockchain", "MetaMask", "Ethereum", "Web3", "Smart Contracts", "Solo Project"],
+      "date": "2021",
+      "tags": ["Ethereum", "Web3", "MetaMask", "Java", "JavaScript", "Solo Project"],
       "links": {},
       "featured": true
     }
+  ],
+  "awards": [
+    "Director's Roll of Honour — Republic Polytechnic (2022)",
+    "RP Service-Learning Award — Republic Polytechnic (2022)",
+    "Edusave Merit Bursary, 3 awards (2021 – 2022)"
   ],
   "certifications": [
     "Canva: Web and Digital Design Projects — LinkedIn Learning (Nov 2022)",

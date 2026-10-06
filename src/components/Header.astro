@@ -14,7 +14,9 @@ const progressSections = [
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
   { id: 'skills', label: 'Skills & Education' },
-  ...(resume.certifications.length ? [{ id: 'certifications', label: 'Licenses & Certifications' }] : []),
+  ...(resume.awards.length || resume.certifications.length
+    ? [{ id: 'certifications', label: 'Awards & Certifications' }]
+    : []),
   { id: 'projects', label: 'Projects' },
   { id: 'contact', label: 'Contact' },
 ];

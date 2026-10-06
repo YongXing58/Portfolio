@@ -400,16 +400,18 @@ recruiter to scan the actual content, not just admire the chrome.
       buttons use `download="Yong_Xing_Fu_Resume.pdf"` so it saves with
       a real name. To update it: re-export the docx to PDF over the same
       path; no code change needed.
-- [ ] **Site data vs. the PDF resume disagree in places** — the resume
-      is newer. Differences: Republic Poly dates (resume 2020–2023, site
-      2021–2024); SBS Transit end date (Mar 2024 vs Feb 2024) and title
-      ("Software Application Intern" vs "Application Developer
-      (Internship)"); SIT end (Jun 2029 vs Jul 2029); project names/years
-      (resume: "EduLink", 2022; Blockchain Marketplace 2021 vs site 2022);
-      resume lists more skills (JavaScript, SQL, MySQL, Pandas, Power BI,
-      Flask, HTML/CSS, Git) and awards (Director's Roll of Honour, RP
-      Service-Learning Award, Edusave Merit Bursary) not on the site.
-      Waiting on the user to confirm syncing `resume.json` to match.
+- [x] **`resume.json` synced to the PDF resume** (2026-10-06): SBS
+      Transit title/end date/bullets/tags, SIT degree wording + end date +
+      modules, skills regrouped to the resume's five categories, projects
+      renamed/re-dated (EduLink 2022, Blockchain Marketplace 2021) with
+      tech-stack tags, and a new `awards` field. **Exception: Republic
+      Poly stays 2021–2024** — the user confirmed the site is right and
+      the PDF (2020–2023) is wrong.
+- [ ] The PDF itself still says Republic Poly 2020–2023 — the user should
+      fix the docx and re-export to `public/resume.pdf`.
+- [ ] Hero summary (`profile.summary`) still mentions "UAT" and "API
+      debugging" at SBS Transit; those are no longer in the experience
+      bullets after the sync. Ask the user before rewording their bio.
 - [x] Scroll-reveal wired up — `BaseLayout.astro` sets up an
       IntersectionObserver over all `.reveal` elements (Experience,
       ProjectCard, Skills, Education, Certifications), fading/sliding each

@@ -62,6 +62,7 @@ export interface Resume {
   education: EducationEntry[];
   skills: SkillGroup[];
   projects: ProjectEntry[];
+  awards: string[];
   certifications: string[];
 }
 
