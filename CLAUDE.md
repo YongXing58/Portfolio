@@ -443,9 +443,10 @@ recruiter to scan the actual content, not just admire the chrome.
       lives in the component, not `resume.json`. Deliberately NOT a
       `.panel` (the global mouse-tilt script would tilt it while someone
       uses the form) — it copies the panel look with utility classes.
-- [ ] **Visitor stats** — needs an analytics account only the user can
-      create (recommended: GoatCounter, free, no cookies). Once they have
-      a site code, add its one-line script to `BaseLayout.astro`.
+- [x] **Visitor stats** via GoatCounter (free, cookieless). Script tag in
+      `BaseLayout.astro` `<head>`; dashboard at
+      https://yongxingfu.goatcounter.com (user's account). count.js
+      ignores localhost, so dev visits don't pollute the numbers.
 - [x] `npm install` and `npm run dev` verified working (repeated checks after
       each data/content change).
 

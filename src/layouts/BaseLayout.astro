@@ -55,6 +55,12 @@ const ogImage = new URL('/og-image.png', Astro.site).href;
       rel="stylesheet"
     />
 
+    <!-- Visitor stats: GoatCounter (free, no cookies, no personal data).
+         Dashboard: https://yongxingfu.goatcounter.com. count.js skips
+         localhost on its own, so local dev visits aren't counted.
+         is:inline keeps Astro from trying to bundle a third-party script. -->
+    <script is:inline data-goatcounter="https://yongxingfu.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
     <script is:inline>
       // Runs synchronously before body paints, so .reveal/.section-enter
       // elements never flash visible-then-hidden. See the CSS fallback
