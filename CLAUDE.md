@@ -71,23 +71,20 @@ pop-with-shadow. See "One section at a time," "Custom cursor," and "Click
 **Typography**
 - Display/headings: `Permanent Marker` — big, bold, comic marker lettering.
   The one deliberately different display face; keep it that way.
-- Body copy AND hand accents: `Caveat` — **the same family**, on purpose.
-  `font-body` and `font-hand` are two Tailwind tokens that both resolve to
-  Caveat (see `tailwind.config.mjs`) — kept as two token names for
-  semantic clarity in markup, not two typefaces. History: started as
-  `Inter` (v2), briefly became `Comic Neue` (v2.2) when the user asked for
-  every body-text font to change, then became Caveat (v2.3) when the user
-  said that was "too many different fonts" and asked body copy to match
-  the Hero subhead's font instead. **Don't reintroduce a third body
-  typeface** without checking with the user — this has already flip-
-  flopped twice.
-- Meta/dates/tags: `Space Mono` — the other deliberately different face,
-  used only for small functional labels (dates, tags, chapter badges).
-- Because Caveat is cursive, hierarchy inside a block of body text comes
-  from **size and weight, not font family** — see "Type hierarchy inside
-  a card" below. `body` defaults to `font-medium` (500) with
-  `line-height: 1.65`; regular 400 reads too thin in this face at normal
-  sizes.
+- Body/paragraph copy: `Nunito` (`font-body`). Clean and readable, with
+  rounded letterforms that sit comfortably next to the comic chrome.
+- Hand accents: `Caveat` (`font-hand`) for labels, subheads, captions,
+  project summary lines and other *short* text. Not for paragraphs.
+- History, so nobody flip-flops this a fifth time: body copy went Inter
+  (v2) → Comic Neue (v2.2) → Caveat (v2.3, user: "too many fonts") →
+  **Nunito (v2.4, current)** — the user asked for a clean paragraph font
+  after a review pointed out that long handwritten paragraphs are slow
+  for recruiters to skim. Four faces total (Permanent Marker, Caveat,
+  Nunito, Space Mono), each with one job. Check with the user before
+  changing the body font again.
+- Meta/dates/tags: `Space Mono` — used only for small functional labels
+  (dates, tags, chapter badges).
+- `body` is regular weight with `line-height: 1.65`.
 
 **Type hierarchy inside a card (why this matters — read before adding
 body text anywhere):** once body copy and accent copy are the same
@@ -393,8 +390,9 @@ recruiter to scan the actual content, not just admire the chrome.
 - [ ] **1 more project pending (deferred)** — user has 3 total; 2 are in
       `resume.json`. User asked to leave project 3 out for now — add when
       they provide it, no action needed until then.
-- [ ] `profile.links.github` and `profile.links.website` still `TODO` —
-      need the user's actual GitHub handle / personal site (if any).
+- [x] GitHub and website links removed from `resume.json` at the user's
+      request (the GitHub button had been linking to a `TODO` placeholder
+      in production). Hero/Footer only render links that exist.
 - [x] Real resume at `public/resume.pdf` — converted from the user's
       `Yong_Xing_Fu_Resume.docx` with Word (one page). Both Resume
       buttons use `download="Yong_Xing_Fu_Resume.pdf"` so it saves with
@@ -426,7 +424,28 @@ recruiter to scan the actual content, not just admire the chrome.
 - [x] Added `scroll-margin-top` on all section anchors so the sticky header
       never overlaps a section heading when jumping via nav links.
 - [ ] Decide on a contact form approach (Formspree/Resend) vs. mailto-only.
-- [ ] Add OG image (`public/og-image.png`) and social meta tags.
+- [x] Link-preview image + meta tags. `public/og-image.png` is a 1200x630
+      comic "cover" (Issue #01). It was designed as HTML and rendered with
+      headless Edge (`msedge --headless=new --screenshot
+      --window-size=1200,630 --virtual-time-budget=8000`); the source HTML
+      isn't kept in the repo — to change it, redesign and re-render at
+      1200x630. Tags live in `BaseLayout.astro` and build absolute URLs
+      from `site` in `astro.config.mjs` (now the real Netlify URL, not
+      `example.com`).
+- [x] **EduLink live demo** (`src/components/EduLinkDemo.astro`, rendered
+      under the project cards; the EduLink card links to it via
+      `links.demo: "#edulink-demo"` — `ProjectCard` treats `#` links as
+      in-page "Try the demo ↓" links instead of new-tab "Live ↗"). Vanilla
+      TS, no framework. Book a class → checks teacher and room clashes,
+      "Auto" assigns a free teacher/room, suggests the next free slot with
+      a one-click "Book that instead". Starts pre-set to a clash so the
+      first click shows the feature. Its sample data is demo data and
+      lives in the component, not `resume.json`. Deliberately NOT a
+      `.panel` (the global mouse-tilt script would tilt it while someone
+      uses the form) — it copies the panel look with utility classes.
+- [ ] **Visitor stats** — needs an analytics account only the user can
+      create (recommended: GoatCounter, free, no cookies). Once they have
+      a site code, add its one-line script to `BaseLayout.astro`.
 - [x] `npm install` and `npm run dev` verified working (repeated checks after
       each data/content change).
 
@@ -661,3 +680,15 @@ recruiter to scan the actual content, not just admire the chrome.
   dates/titles/skills (see Open Items). Verified: 0 build errors;
   `/resume.pdf` serves 200 `application/pdf` (300,742 bytes); no
   `#ladder-climb` in the DOM; running stickman still animating.
+- **Recruiter round: GitHub removed, Nunito paragraphs, EduLink demo,
+  link preview.** User asked for "wow factor" ideas, then picked: remove
+  the (broken) GitHub button, a clean paragraph font, the EduLink demo,
+  the link-preview image and visitor stats. Done except visitor stats,
+  which waits on the user creating an analytics account. Verified: 0
+  build/type errors; clicked through the demo (default booking → CLASH
+  with both reasons and the conflicting chip highlighted → "Book that
+  instead" → BOOKED at Mon 6 PM) and scripted the auto-assign edge cases
+  (rooms-full message no longer wrongly blames teachers; auto picks the
+  second qualified teacher when the first is busy); demo usable at 375px
+  (2-col form, horizontally scrolling timetable); OG tags emit absolute
+  URLs and the image renders at 1200x630.

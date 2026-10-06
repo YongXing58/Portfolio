@@ -25,13 +25,14 @@ export default {
       },
       fontFamily: {
         display: ['"Permanent Marker"', 'cursive'], // big comic headings
-        // `hand` and `body` are deliberately the SAME family (Caveat) —
-        // the user asked for body copy to match the hero subhead font
-        // rather than running a 4th typeface. Two token names stay for
-        // semantic clarity in markup; don't reintroduce a different body
-        // font without re-checking with the user first (see CLAUDE.md §3).
+        // Handwritten accents (labels, subheads, captions, short lines).
         hand: ['"Caveat"', 'cursive'],
-        body: ['"Caveat"', 'cursive'],
+        // Paragraph/body copy: a clean, readable face. The user asked for
+        // this after body copy spent a while in Caveat — long handwritten
+        // paragraphs are slow for recruiters to skim. Nunito's rounded
+        // letterforms keep it friendly next to the comic chrome. See
+        // CLAUDE.md §3 for the full history before changing it again.
+        body: ['"Nunito"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['"Space Mono"', 'monospace'], // dates, meta, tags
       },
       boxShadow: {

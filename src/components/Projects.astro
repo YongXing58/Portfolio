@@ -1,6 +1,7 @@
 ---
 import { resume } from '@data/resume';
 import ProjectCard from './ProjectCard.astro';
+import EduLinkDemo from './EduLinkDemo.astro';
 ---
 
 <section id="projects" class="snap-section section-enter relative mx-auto max-w-5xl px-6 py-16" data-anim="flip">
@@ -25,4 +26,6 @@ import ProjectCard from './ProjectCard.astro';
   <div class="grid gap-8 sm:grid-cols-2">
     {resume.projects.map((project) => <ProjectCard project={project} />)}
   </div>
+
+  <EduLinkDemo />
 </section>

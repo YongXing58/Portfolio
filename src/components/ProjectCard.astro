@@ -41,9 +41,15 @@ const { project } = Astro.props;
     project.links?.demo || project.links?.repo || project.links?.caseStudy ? (
       <div class="mt-5 flex flex-wrap gap-4 font-mono text-xs">
         {project.links?.demo ? (
-          <a href={project.links.demo} target="_blank" rel="noopener noreferrer" class="link-underline">
-            Live ↗
-          </a>
+          project.links.demo.startsWith('#') ? (
+            <a href={project.links.demo} class="link-underline">
+              Try the demo ↓
+            </a>
+          ) : (
+            <a href={project.links.demo} target="_blank" rel="noopener noreferrer" class="link-underline">
+              Live ↗
+            </a>
+          )
         ) : null}
         {project.links?.repo ? (
           <a href={project.links.repo} target="_blank" rel="noopener noreferrer" class="link-underline">

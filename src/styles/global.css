@@ -43,12 +43,8 @@
   }
 
   body {
-    @apply relative bg-paper-50 text-ink-900 font-body font-medium antialiased;
-    /* Caveat is a cursive/handwritten face, which reads noticeably smaller
-       and tighter than a normal sans body font at the same px size — bump
-       the baseline line-height so paragraphs of it stay comfortable to
-       read, and default to medium weight (regular 400 looks too thin in
-       this face) reserving bold for things that should visibly stand out. */
+    @apply relative bg-paper-50 text-ink-900 font-body antialiased;
+    /* Generous line-height for comfortable paragraph reading. */
     line-height: 1.65;
     /* Warm paper with a classic comic-print "misregistration" halftone:
        the main ink dot grid plus two faint colored dot layers, each
@@ -305,7 +301,8 @@ html:not(.js-reveal-ready) .section-enter {
 html.custom-cursor-active,
 html.custom-cursor-active a,
 html.custom-cursor-active button,
-html.custom-cursor-active .panel {
+html.custom-cursor-active .panel,
+html.custom-cursor-active select {
   cursor: none !important;
 }
 
@@ -371,6 +368,11 @@ html.custom-cursor-active .panel {
 @keyframes stride-b {
   0%, 49% { opacity: 0; }
   50%, 100% { opacity: 1; }
+}
+
+/* EduLink demo: a booked chip that caused a clash shakes twice. */
+.demo-clash {
+  animation: tag-shake 0.4s ease-in-out 2;
 }
 
 @keyframes tag-shake {

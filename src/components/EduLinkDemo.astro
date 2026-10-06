@@ -1,0 +1,272 @@
+---
+// Interactive mini-demo of EduLink's core idea: booking a class with
+// automatic teacher/room assignment and clash detection. The original
+// project's code lives in a disabled school account, so this rebuilds
+// the scheduling logic as proof of the skill. The data below is
+// illustrative demo data, not resume content — it lives here rather than
+// in resume.json on purpose.
+const subjects = ['Math', 'Science', 'English'];
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const slots = ['2 PM', '4 PM', '6 PM'];
+const rooms = ['Room A', 'Room B'];
+const selectClass =
+  'w-full rounded-xl border-2 border-ink-900 bg-paper-50 px-3 py-2 font-body text-sm font-semibold text-ink-900 shadow-comic-sm focus:outline-none focus:ring-2 focus:ring-splash-yellow';
+const labelClass = 'mb-1 block font-hand text-lg font-bold text-ink-900';
+---
+
+<div
+  id="edulink-demo"
+  class="reveal relative mt-14 scroll-mt-28 rounded-[1.75rem] border-[3px] border-ink-900 bg-paper-100 p-5 shadow-comic sm:p-8"
+>
+  <div class="flex flex-wrap items-center gap-3">
+    <span class="section-label">Try it yourself</span>
+    <span class="chapter-badge">LIVE DEMO</span>
+  </div>
+  <h3 class="mt-4 text-2xl text-ink-900 sm:text-3xl">EduLink Scheduler</h3>
+  <p class="mt-2 max-w-2xl text-sm text-ink-700 sm:text-base">
+    A working mini version of EduLink's booking logic. Book a class and the system checks every teacher and room for
+    clashes. Pick <strong>Auto</strong> and it assigns a free one for you.
+  </p>
+
+  <form id="edulink-form" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5" novalidate>
+    <div>
+      <label for="ed-subject" class={labelClass}>Subject</label>
+      <select id="ed-subject" class={selectClass}>
+        {subjects.map((s) => <option value={s}>{s}</option>)}
+      </select>
+    </div>
+    <div>
+      <label for="ed-teacher" class={labelClass}>Teacher</label>
+      <select id="ed-teacher" class={selectClass}></select>
+    </div>
+    <div>
+      <label for="ed-room" class={labelClass}>Room</label>
+      <select id="ed-room" class={selectClass}>
+        <option value="auto">Auto</option>
+        {rooms.map((r) => <option value={r} selected={r === 'Room A'}>{r}</option>)}
+      </select>
+    </div>
+    <div>
+      <label for="ed-day" class={labelClass}>Day</label>
+      <select id="ed-day" class={selectClass}>
+        {days.map((d) => <option value={d}>{d}</option>)}
+      </select>
+    </div>
+    <div>
+      <label for="ed-slot" class={labelClass}>Time</label>
+      <select id="ed-slot" class={selectClass}>
+        {slots.map((s) => <option value={s} selected={s === '4 PM'}>{s}</option>)}
+      </select>
+    </div>
+    <div class="col-span-2 flex flex-wrap gap-3 sm:col-span-5">
+      <button type="submit" class="comic-btn bg-splash-yellow">Book class</button>
+      <button type="button" id="ed-reset" class="comic-btn">Reset timetable</button>
+    </div>
+  </form>
+
+  <div
+    id="ed-message"
+    role="status"
+    aria-live="polite"
+    class="mt-5 min-h-[3.5rem] rounded-2xl border-2 border-dashed border-ink-400 bg-paper-50 px-4 py-3 text-sm text-ink-700 sm:text-base"
+  >
+    <span class="font-hand text-lg font-bold text-ink-900">Hint:</span> try booking <strong>Ms Tan</strong> in
+    <strong>Room A</strong> on <strong>Mon 4 PM</strong> and see what happens.
+  </div>
+
+  <div class="mt-5 overflow-x-auto">
+    <table class="w-full min-w-[560px] border-separate border-spacing-1.5 text-left">
+      <thead>
+        <tr>
+          <th class="w-16"></th>
+          {days.map((d) => <th class="font-hand text-lg font-bold text-ink-900">{d}</th>)}
+        </tr>
+      </thead>
+      <tbody id="ed-grid"></tbody>
+    </table>
+  </div>
+  <p class="mt-3 font-mono text-[0.65rem] text-ink-400">
+    Demo data only. Built to show how the real system handled scheduling.
+  </p>
+</div>
+
+<script>
+  type Booking = { subject: string; teacher: string; room: string; day: string; slot: string };
+
+  const TEACHERS = [
+    { name: 'Ms Tan', subjects: ['Math'] },
+    { name: 'Mr Lim', subjects: ['Science'] },
+    { name: 'Ms Wong', subjects: ['English'] },
+    { name: 'Mr Ong', subjects: ['Math', 'Science'] },
+  ];
+  const ROOMS = ['Room A', 'Room B'];
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  const SLOTS = ['2 PM', '4 PM', '6 PM'];
+  const SEED: Booking[] = [
+    { subject: 'Math', teacher: 'Ms Tan', room: 'Room A', day: 'Mon', slot: '4 PM' },
+    { subject: 'Science', teacher: 'Mr Lim', room: 'Room B', day: 'Mon', slot: '4 PM' },
+    { subject: 'English', teacher: 'Ms Wong', room: 'Room A', day: 'Wed', slot: '2 PM' },
+    { subject: 'Science', teacher: 'Mr Ong', room: 'Room B', day: 'Thu', slot: '6 PM' },
+    { subject: 'Math', teacher: 'Ms Tan', room: 'Room B', day: 'Fri', slot: '4 PM' },
+  ];
+  // Full class strings (not built dynamically) so Tailwind keeps them.
+  const SUBJECT_CHIP: Record<string, string> = {
+    Math: 'bg-splash-yellow/70',
+    Science: 'bg-splash-blue/25',
+    English: 'bg-splash-red/20',
+  };
+
+  const form = document.getElementById('edulink-form') as HTMLFormElement | null;
+  const subjectEl = document.getElementById('ed-subject') as HTMLSelectElement | null;
+  const teacherEl = document.getElementById('ed-teacher') as HTMLSelectElement | null;
+  const roomEl = document.getElementById('ed-room') as HTMLSelectElement | null;
+  const dayEl = document.getElementById('ed-day') as HTMLSelectElement | null;
+  const slotEl = document.getElementById('ed-slot') as HTMLSelectElement | null;
+  const grid = document.getElementById('ed-grid');
+  const message = document.getElementById('ed-message');
+  const resetBtn = document.getElementById('ed-reset');
+
+  if (form && subjectEl && teacherEl && roomEl && dayEl && slotEl && grid && message && resetBtn) {
+    let bookings: Booking[] = SEED.map((b) => ({ ...b }));
+
+    const teachersFor = (subject: string) => TEACHERS.filter((t) => t.subjects.includes(subject)).map((t) => t.name);
+    const at = (day: string, slot: string) => bookings.filter((b) => b.day === day && b.slot === slot);
+    const teacherFree = (name: string, day: string, slot: string) => !at(day, slot).some((b) => b.teacher === name);
+    const roomFree = (room: string, day: string, slot: string) => !at(day, slot).some((b) => b.room === room);
+
+    function fillTeachers(preferred?: string) {
+      const names = teachersFor(subjectEl!.value);
+      teacherEl!.innerHTML = '';
+      teacherEl!.append(new Option('Auto', 'auto'));
+      names.forEach((n) => teacherEl!.append(new Option(n, n)));
+      teacherEl!.value = preferred && names.includes(preferred) ? preferred : names[0];
+    }
+
+    function render(highlight?: Booking, clashWith: Booking[] = []) {
+      grid!.innerHTML = '';
+      for (const slot of SLOTS) {
+        const row = document.createElement('tr');
+        const head = document.createElement('th');
+        head.className = 'whitespace-nowrap pr-1 align-top font-mono text-xs font-bold text-ink-700';
+        head.textContent = slot;
+        row.append(head);
+        for (const day of DAYS) {
+          const cell = document.createElement('td');
+          cell.className =
+            'h-20 min-w-[96px] rounded-xl border-2 border-dashed border-ink-400/60 bg-paper-50/70 p-1 align-top';
+          for (const b of at(day, slot)) {
+            const chip = document.createElement('div');
+            chip.className = `mb-1 rounded-lg border-2 border-ink-900 px-1.5 py-0.5 font-mono text-[0.65rem] font-bold leading-tight text-ink-900 ${SUBJECT_CHIP[b.subject]}`;
+            if (b === highlight) chip.classList.add('animate-pop-in', 'ring-2', 'ring-ink-900');
+            if (clashWith.includes(b)) chip.classList.add('demo-clash', 'ring-2', 'ring-splash-red');
+            chip.textContent = `${b.subject} · ${b.teacher} · ${b.room.replace('Room ', '')}`;
+            cell.append(chip);
+          }
+          row.append(cell);
+        }
+        grid!.append(row);
+      }
+    }
+
+    function say(kind: 'ok' | 'clash', html: string) {
+      message!.className =
+        kind === 'ok'
+          ? 'mt-5 min-h-[3.5rem] rounded-2xl border-2 border-ink-900 bg-splash-yellow/30 px-4 py-3 text-sm text-ink-900 sm:text-base'
+          : 'mt-5 min-h-[3.5rem] rounded-2xl border-2 border-splash-red bg-splash-red/10 px-4 py-3 text-sm text-ink-900 sm:text-base';
+      const title = kind === 'ok' ? 'BOOKED!' : 'CLASH!';
+      const color = kind === 'ok' ? 'text-ink-900' : 'text-splash-red';
+      message!.innerHTML = `<span class="font-display text-xl ${color}">${title}</span> ${html}`;
+    }
+
+    // Resolve "Auto" choices for a given slot; null if nothing is free.
+    function resolve(subject: string, teacher: string, room: string, day: string, slot: string) {
+      const t =
+        teacher === 'auto' ? teachersFor(subject).find((n) => teacherFree(n, day, slot)) : teacherFree(teacher, day, slot) ? teacher : undefined;
+      const r = room === 'auto' ? ROOMS.find((x) => roomFree(x, day, slot)) : roomFree(room, day, slot) ? room : undefined;
+      return t && r ? { teacher: t, room: r } : null;
+    }
+
+    // Earliest later slot (wrapping round the week) where the request fits.
+    function nextFree(subject: string, teacher: string, room: string, day: string, slot: string) {
+      const all = DAYS.flatMap((d) => SLOTS.map((s) => ({ day: d, slot: s })));
+      const start = all.findIndex((x) => x.day === day && x.slot === slot);
+      for (let i = 1; i < all.length; i++) {
+        const { day: d, slot: s } = all[(start + i) % all.length];
+        const fit = resolve(subject, teacher, room, d, s);
+        if (fit) return { day: d, slot: s, ...fit };
+      }
+      return null;
+    }
+
+    function book() {
+      const subject = subjectEl!.value;
+      const teacher = teacherEl!.value;
+      const room = roomEl!.value;
+      const day = dayEl!.value;
+      const slot = slotEl!.value;
+      const fit = resolve(subject, teacher, room, day, slot);
+
+      if (fit) {
+        const b = { subject, teacher: fit.teacher, room: fit.room, day, slot };
+        bookings.push(b);
+        const auto = [teacher === 'auto' && `<strong>${fit.teacher}</strong> was auto-assigned`, room === 'auto' && `<strong>${fit.room}</strong> was auto-assigned`].filter(Boolean);
+        say('ok', `${subject} with <strong>${fit.teacher}</strong> in <strong>${fit.room}</strong>, ${day} ${slot}.${auto.length ? ` ${auto.join(' and ')}.` : ''}`);
+        render(b);
+        return;
+      }
+
+      const busy = at(day, slot);
+      const reasons: string[] = [];
+      const clashWith: Booking[] = [];
+      if (teacher === 'auto') {
+        if (!teachersFor(subject).some((n) => teacherFree(n, day, slot))) reasons.push(`no ${subject} teacher is free`);
+      } else {
+        const tb = busy.find((b) => b.teacher === teacher);
+        if (tb) {
+          reasons.push(`<strong>${teacher}</strong> is already teaching ${tb.subject} then`);
+          clashWith.push(tb);
+        }
+      }
+      if (room === 'auto') {
+        if (!ROOMS.some((r) => roomFree(r, day, slot))) reasons.push(`both rooms are taken`);
+      } else {
+        const rb = busy.find((b) => b.room === room);
+        if (rb) {
+          reasons.push(`<strong>${room}</strong> is already booked for ${rb.subject}`);
+          if (!clashWith.includes(rb)) clashWith.push(rb);
+        }
+      }
+
+      const alt = nextFree(subject, teacher, room, day, slot);
+      const altHtml = alt
+        ? ` Next free slot: <strong>${alt.day} ${alt.slot}</strong>. <button type="button" class="ed-take-alt link-underline" data-day="${alt.day}" data-slot="${alt.slot}">Book that instead</button>`
+        : ' No free slot this week.';
+      say('clash', `On ${day} ${slot}, ${reasons.join(' and ')}.${altHtml}`);
+      render(undefined, clashWith);
+    }
+
+    subjectEl.addEventListener('change', () => fillTeachers());
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      book();
+    });
+    message.addEventListener('click', (e) => {
+      const btn = (e.target as Element).closest<HTMLElement>('.ed-take-alt');
+      if (!btn) return;
+      dayEl.value = btn.dataset.day!;
+      slotEl.value = btn.dataset.slot!;
+      book();
+    });
+    resetBtn.addEventListener('click', () => {
+      bookings = SEED.map((b) => ({ ...b }));
+      message.className =
+        'mt-5 min-h-[3.5rem] rounded-2xl border-2 border-dashed border-ink-400 bg-paper-50 px-4 py-3 text-sm text-ink-700 sm:text-base';
+      message.innerHTML =
+        '<span class="font-hand text-lg font-bold text-ink-900">Reset!</span> The timetable is back to its starting state.';
+      render();
+    });
+
+    fillTeachers('Ms Tan');
+    render();
+  }
+</script>

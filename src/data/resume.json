@@ -7,9 +7,7 @@
     "email": "yongxing937@gmail.com",
     "resumePdf": "/resume.pdf",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/yongxingfu/",
-      "github": "TODO: https://github.com/yourhandle",
-      "website": "TODO"
+      "linkedin": "https://www.linkedin.com/in/yongxingfu/"
     }
   },
   "targetRoles": [
@@ -83,7 +81,7 @@
       "role": "Project Leader & Main Developer",
       "date": "2022 · 6 months",
       "tags": ["Python", "Flask", "MySQL", "Java", "JavaScript", "Final Year Project", "Real Client"],
-      "links": {},
+      "links": { "demo": "#edulink-demo" },
       "featured": true
     },
     {

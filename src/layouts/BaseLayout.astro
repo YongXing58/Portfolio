@@ -11,6 +11,9 @@ const {
   title = `${resume.profile.name} — ${resume.profile.headline}`,
   description = resume.profile.summary,
 } = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og-image.png', Astro.site).href;
 ---
 
 <!doctype html>
@@ -22,6 +25,24 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
 
+    <!-- Link previews (LinkedIn, WhatsApp, Slack, email, X). og:image
+         must be an absolute URL, built from `site` in astro.config.mjs.
+         The image is public/og-image.png, a 1200x630 comic "cover". -->
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={resume.profile.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${resume.profile.name}, ${resume.profile.headline}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
     <!-- Google Fonts: Permanent Marker (display headings) + Caveat (body
          AND hand accents — same family everywhere except headings/meta,
          per the user's "too many fonts" feedback) + Space Mono
@@ -30,7 +51,7 @@ const {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
 

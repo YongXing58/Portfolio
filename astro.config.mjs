@@ -3,7 +3,7 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com', // TODO: replace with final domain
+  site: 'https://yongxingfu.netlify.app',
   integrations: [
     tailwind({
       applyBaseStyles: false,
